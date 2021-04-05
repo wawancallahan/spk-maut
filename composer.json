@@ -1,0 +1,11 @@
+{
+    "name": "wawan/spk-saw",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Wawan",
+            "email": "wawan.callahan@gmail.com"
+        }
+    ],
+    "require": {}
+}
