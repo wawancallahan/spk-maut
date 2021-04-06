@@ -1,3 +1,25 @@
+<?php
+
+require __DIR__ . '/config/connect.php';
+require __DIR__ . '/config/session.php';
+require __DIR__ . '/vendor/autoload.php';
+
+use Models\Kriteria;
+
+$kriteriaModels = new Kriteria($pdo);
+$kriteriaModels->setFilter([
+    'status_sub' => 1 
+]);
+$kriteriaItems = $kriteriaModels->index();
+
+ob_start();
+
+extract([
+    'kriteriaItems' => $kriteriaItems
+]);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +44,7 @@
         </div>
 
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-dark">
+        <nav class="main-header navbar navbar-expand navbar-light">
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -50,12 +72,12 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Dashboard v2</h1>
+                        <h1 class="m-0">Sub Kriteria</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard v2</li>
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Sub Kriteria</li>
                         </ol>
                     </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -66,69 +88,47 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Info boxes -->
-                    <div class="row">
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
 
-                            <div class="info-box-content">
-                                <span class="info-box-text">CPU Traffic</span>
-                                <span class="info-box-number">
-                                10
-                                <small>%</small>
-                                </span>
-                            </div>
-                            <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
+                    <?php require_once __DIR__ . '/components/flash.php' ?>
+
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Tambah Sub Kriteria</h3>
                         </div>
-                        <!-- /.col -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                            <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form action="tambah_sub_kriteria_proses.php" method="POST">
+                            <div class="card-body">
 
-                            <div class="info-box-content">
-                                <span class="info-box-text">Likes</span>
-                                <span class="info-box-number">41,410</span>
-                            </div>
-                            <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
+                                <div class="form-group">
+                                    <label>Kriteria</label>
+                                    <select name="kriteria_id" id="" class="form-control" required>
+                                        <option value="">Pilih Kriteria</option>
+                                        <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                            <option value="<?php echo $kriteriaItem['id'] ?>"><?php echo $kriteriaItem['nama'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
 
-                        <!-- fix for small devices only -->
-                        <div class="clearfix hidden-md-up"></div>
+                                <div class="form-group">
+                                    <label>Nama</label>
+                                    <input type="text" name="nama" class="form-control" placeholder="Nama" required>
+                                </div>
 
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                            <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+                                <div class="form-group">
+                                    <label>Bobot</label>
+                                    <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" value="0" required>
+                                </div>
 
-                            <div class="info-box-content">
-                                <span class="info-box-text">Sales</span>
-                                <span class="info-box-number">760</span>
                             </div>
-                            <!-- /.info-box-content -->
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                            <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-                            <div class="info-box-content">
-                                <span class="info-box-text">New Members</span>
-                                <span class="info-box-number">2,000</span>
-                            </div>
-                            <!-- /.info-box-content -->
-                            </div>
-                            <!-- /.info-box -->
-                        </div>
-                        <!-- /.col -->
+                        </form>
                     </div>
-                    <!-- /.row -->
+                    <!-- /.card -->
                 </div><!--/. container-fluid -->
             </section>
             <!-- /.content -->
@@ -158,3 +158,13 @@
 
 </body>
 </html>
+
+<?php
+
+$view = ob_get_clean();
+
+reset_session_flash();
+
+echo $view;
+
+?>

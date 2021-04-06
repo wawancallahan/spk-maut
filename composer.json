@@ -7,5 +7,10 @@
             "email": "wawan.callahan@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Models\\": "models"
+        }
+    }
 }
