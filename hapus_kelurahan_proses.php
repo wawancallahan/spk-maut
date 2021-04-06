@@ -7,38 +7,36 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\Kelurahan;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama = input_form($_POST['nama'] ?? null);
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $id = input_form($_GET['id'] ?? null);
 
     $kelurahanModel = new Kelurahan($pdo);
-    $item = $kelurahanModel->create([
-        'nama' => $nama
-    ]);
+    $item = $kelurahanModel->delete($id);
 
     switch ($item) {
         case 'success':
             $_SESSION['type'] = 'success';
-            $_SESSION['message'] = 'Data Berhasil Ditambah';
+            $_SESSION['message'] = 'Data Berhasil Dihapus';
 
             header('location: kelurahan.php');
             die();
             break;
         case 'fail':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Ditambah';
+            $_SESSION['message'] = 'Data Gagal Dihapus';
             break;
         case 'validation':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Semua bidang isian wajib diisi';
+            $_SESSION['message'] = 'Data Gagal Dihapus';
             break;
     }
 
-    header('location: tambah_kelurahan.php');
+    header('location: kelurahan.php');
     die();
 }
 
 $_SESSION['type'] = 'danger';
 $_SESSION['message'] = 'Terjadi Kesalahan Proses Data';
 
-header('location: tambah_kelurahan.php');
+header('location: kelurahan.php');
 die();

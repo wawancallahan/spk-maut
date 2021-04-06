@@ -6,8 +6,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\Kriteria;
 
-$kriteriaModels = new Kriteria($pdo);
-$kriteriaItems = $kriteriaModels->index();
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaItems = $kriteriaModel->index();
 
 ob_start();
 
@@ -118,7 +118,15 @@ extract([
                                             <td><?php echo $kriteriaItem['bobot'] ?></td>
                                             <td><?php echo $kriteriaItem['status'] ?></td>
                                             <td><?php echo $kriteriaItem['status_sub'] == 1 ? 'Ya' : 'Tidak' ?></td>
-                                            <td></td>
+                                            <td>
+                                                <a href="edit_kriteria.php?id=<?php echo $kriteriaItem['id'] ?>" class="btn btn-warning btn-sm">
+                                                    <i class="fa fa-edit"></i> Edit
+                                                </a>
+                                                
+                                                <a href="hapus_kriteria_proses.php?id=<?php echo $kriteriaItem['id'] ?>" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash"></i> Hapus
+                                                </a>
+                                            </td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

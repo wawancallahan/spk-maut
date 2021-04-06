@@ -7,42 +7,36 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\SubKriteria;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama = input_form($_POST['nama'] ?? null);
-    $bobot = input_form($_POST['bobot'] ?? null);
-    $kriteria_id = input_form($_POST['kriteria_id'] ?? null);
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $id = input_form($_GET['id'] ?? null);
 
     $subKriteriaModel = new SubKriteria($pdo);
-    $item = $subKriteriaModel->create([
-        'nama' => $nama,
-        'bobot' => $bobot,
-        'kriteria_id' => $kriteria_id
-    ]);
+    $item = $subKriteriaModel->delete($id);
 
     switch ($item) {
         case 'success':
             $_SESSION['type'] = 'success';
-            $_SESSION['message'] = 'Data Berhasil Ditambah';
+            $_SESSION['message'] = 'Data Berhasil Dihapus';
 
             header('location: sub_kriteria.php');
             die();
             break;
         case 'fail':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Ditambah';
+            $_SESSION['message'] = 'Data Gagal Dihapus';
             break;
         case 'validation':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Semua bidang isian wajib diisi';
+            $_SESSION['message'] = 'Data Gagal Dihapus';
             break;
     }
 
-    header('location: tambah_sub_kriteria.php');
+    header('location: sub_kriteria.php');
     die();
 }
 
 $_SESSION['type'] = 'danger';
 $_SESSION['message'] = 'Terjadi Kesalahan Proses Data';
 
-header('location: tambah_sub_kriteria.php');
+header('location: sub_kriteria.php');
 die();

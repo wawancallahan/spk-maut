@@ -3,17 +3,24 @@
 require __DIR__ . '/config/connect.php';
 require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config/form.php';
 
-use Models\SubKriteria;
+use Models\Kelurahan;
 
-$subKriteriaModel = new SubKriteria($pdo);
-$subKriteriaItems = $subKriteriaModel->index();
+$kelurahanModel = new Kelurahan($pdo);
+
+$id = input_form($_GET['id'] ?? null);
+$item = $kelurahanModel->find($id);
+
+if ($item === null) {
+    $_SESSION['type'] = 'danger';
+    $_SESSION['message'] = 'Data Tidak Ditemukan';
+
+    header('location: kelurahan.php');
+    die();
+}
 
 ob_start();
-
-extract([
-    'subKriteriaItems' => $subKriteriaItems
-]);
 
 ?>
 
@@ -69,12 +76,12 @@ extract([
                 <div class="container-fluid">
                     <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Sub Kriteria</h1>
+                        <h1 class="m-0">Kelurahan</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Sub Kriteria</li>
+                            <li class="breadcrumb-item active">Kelurahan</li>
                         </ol>
                     </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -88,50 +95,28 @@ extract([
 
                     <?php require_once __DIR__ . '/components/flash.php' ?>
 
-                    <div class="mb-3">
-                        <a href="tambah_sub_kriteria.php" class="btn btn-primary">Tambah Sub Kriteria</a>
-                    </div>
-
+                    <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Daftar Sub Kriteria</h3>
+                            <h3 class="card-title">Edit Kelurahan</h3>
                         </div>
-
                         <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Kriteria</th>
-                                        <th>Nama</th>
-                                        <th>Bobot</th>
-                                        <th>Option</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($subKriteriaItems as $index => $subKriteriaItem) { ?>
-                                        <tr>
-                                            <td><?php echo $index + 1 ?></td>
-                                            <td><?php echo $subKriteriaItem['nama_kriteria'] ?></td>
-                                            <td><?php echo $subKriteriaItem['nama'] ?></td>
-                                            <td><?php echo $subKriteriaItem['bobot'] ?></td>
-                                            <td>
-                                                <a href="edit_sub_kriteria.php?id=<?php echo $subKriteriaItem['id'] ?>" class="btn btn-warning btn-sm">
-                                                    <i class="fa fa-edit"></i> Edit
-                                                </a>
-                                                
-                                                <a href="hapus_sub_kriteria_proses.php?id=<?php echo $subKriteriaItem['id'] ?>" class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-trash"></i> Hapus
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
+                        <!-- form start -->
+                        <form action="edit_kelurahan_proses.php" method="POST">
+                            <input type="hidden" name="id" value="<?php echo $item['id'] ?>">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Nama</label>
+                                    <input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" required>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
                     </div>
+                    <!-- /.card -->
                 </div><!--/. container-fluid -->
             </section>
             <!-- /.content -->

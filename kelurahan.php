@@ -6,8 +6,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\Kelurahan;
 
-$kelurahanModels = new Kelurahan($pdo);
-$kelurahanItems = $kelurahanModels->index();
+$kelurahanModel = new Kelurahan($pdo);
+$kelurahanItems = $kelurahanModel->index();
 
 ob_start();
 
@@ -95,18 +95,6 @@ extract([
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Daftar Kelurahan</h3>
-
-                            <div class="card-tools">
-                                <div class="input-group input-group-sm" style="width: 150px;">
-                                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-default">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- /.card-header -->
@@ -124,7 +112,15 @@ extract([
                                         <tr>
                                             <td><?php echo $index + 1 ?></td>
                                             <td><?php echo $kelurahanItem['nama'] ?></td>
-                                            <td></td>
+                                            <td>
+                                                <a href="edit_kelurahan.php?id=<?php echo $kelurahanItem['id'] ?>" class="btn btn-warning btn-sm">
+                                                    <i class="fa fa-edit"></i> Edit
+                                                </a>
+                                                
+                                                <a href="hapus_kelurahan_proses.php?id=<?php echo $kelurahanItem['id'] ?>" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash"></i> Hapus
+                                                </a>
+                                            </td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

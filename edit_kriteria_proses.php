@@ -5,31 +5,37 @@ require __DIR__ . '/config/session.php';
 require __DIR__ . '/config/form.php';
 require __DIR__ . '/vendor/autoload.php';
 
-use Models\SubKriteria;
+use Models\Kriteria;
+
+$id = null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = input_form($_POST['id'] ?? null);
     $nama = input_form($_POST['nama'] ?? null);
     $bobot = input_form($_POST['bobot'] ?? null);
-    $kriteria_id = input_form($_POST['kriteria_id'] ?? null);
+    $status = input_form($_POST['status'] ?? null);
+    $sub = input_form($_POST['sub'] ?? null);
 
-    $subKriteriaModel = new SubKriteria($pdo);
-    $item = $subKriteriaModel->create([
+    $kriteriaModel = new Kriteria($pdo);
+    $item = $kriteriaModel->update([
         'nama' => $nama,
         'bobot' => $bobot,
-        'kriteria_id' => $kriteria_id
+        'status' => $status,
+        'sub' => $sub,
+        'id' => $id
     ]);
 
     switch ($item) {
         case 'success':
             $_SESSION['type'] = 'success';
-            $_SESSION['message'] = 'Data Berhasil Ditambah';
+            $_SESSION['message'] = 'Data Berhasil Diedit';
 
-            header('location: sub_kriteria.php');
+            header('location: kriteria.php');
             die();
             break;
         case 'fail':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Ditambah';
+            $_SESSION['message'] = 'Data Gagal Diedit';
             break;
         case 'validation':
             $_SESSION['type'] = 'danger';
@@ -37,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
     }
 
-    header('location: tambah_sub_kriteria.php');
+    header('location: edit_kriteria.php?id=' . $id);
     die();
 }
 
 $_SESSION['type'] = 'danger';
 $_SESSION['message'] = 'Terjadi Kesalahan Proses Data';
 
-header('location: tambah_sub_kriteria.php');
+header('location: edit_kriteria.php?id=' . $id);
 die();

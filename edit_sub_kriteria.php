@@ -3,16 +3,34 @@
 require __DIR__ . '/config/connect.php';
 require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config/form.php';
 
+use Models\Kriteria;
 use Models\SubKriteria;
 
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaModel->setFilter([
+    'status_sub' => 1 
+]);
+$kriteriaItems = $kriteriaModel->index();
+
 $subKriteriaModel = new SubKriteria($pdo);
-$subKriteriaItems = $subKriteriaModel->index();
+
+$id = input_form($_GET['id'] ?? null);
+$item = $subKriteriaModel->find($id);
+
+if ($item === null) {
+    $_SESSION['type'] = 'danger';
+    $_SESSION['message'] = 'Data Tidak Ditemukan';
+
+    header('location: sub_kriteria.php');
+    die();
+}
 
 ob_start();
 
 extract([
-    'subKriteriaItems' => $subKriteriaItems
+    'kriteriaItems' => $kriteriaItems
 ]);
 
 ?>
@@ -88,50 +106,45 @@ extract([
 
                     <?php require_once __DIR__ . '/components/flash.php' ?>
 
-                    <div class="mb-3">
-                        <a href="tambah_sub_kriteria.php" class="btn btn-primary">Tambah Sub Kriteria</a>
-                    </div>
-
+                    <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Daftar Sub Kriteria</h3>
+                            <h3 class="card-title">Edit Sub Kriteria</h3>
                         </div>
-
                         <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Kriteria</th>
-                                        <th>Nama</th>
-                                        <th>Bobot</th>
-                                        <th>Option</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($subKriteriaItems as $index => $subKriteriaItem) { ?>
-                                        <tr>
-                                            <td><?php echo $index + 1 ?></td>
-                                            <td><?php echo $subKriteriaItem['nama_kriteria'] ?></td>
-                                            <td><?php echo $subKriteriaItem['nama'] ?></td>
-                                            <td><?php echo $subKriteriaItem['bobot'] ?></td>
-                                            <td>
-                                                <a href="edit_sub_kriteria.php?id=<?php echo $subKriteriaItem['id'] ?>" class="btn btn-warning btn-sm">
-                                                    <i class="fa fa-edit"></i> Edit
-                                                </a>
-                                                
-                                                <a href="hapus_sub_kriteria_proses.php?id=<?php echo $subKriteriaItem['id'] ?>" class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-trash"></i> Hapus
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
+                        <!-- form start -->
+                        <form action="edit_sub_kriteria_proses.php" method="POST">
+                            <input type="hidden" name="id" value="<?php echo $item['id'] ?>">
+                            <div class="card-body">
+
+                                <div class="form-group">
+                                    <label>Kriteria</label>
+                                    <select name="kriteria_id" id="" class="form-control" required>
+                                        <option value="">Pilih Kriteria</option>
+                                        <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                            <option value="<?php echo $kriteriaItem['id'] ?>" <?php echo $kriteriaItem['id'] == $item['kriteria_id'] ? 'selected' : null ?>><?php echo $kriteriaItem['nama'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nama</label>
+                                    <input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Bobot</label>
+                                    <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" value="<?php echo $item['bobot'] ?>" required>
+                                </div>
+
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
                     </div>
+                    <!-- /.card -->
                 </div><!--/. container-fluid -->
             </section>
             <!-- /.content -->
