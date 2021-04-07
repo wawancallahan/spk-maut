@@ -60,6 +60,14 @@
                     </li>
                 </ul>
             </li>
+            <li class="nav-item">
+                <a href="hasil.php" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Hasil
+                    </p>
+                </a>
+            </li>
         </ul>
     </nav>
     <!-- /.sidebar-menu -->
