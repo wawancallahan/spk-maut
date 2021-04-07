@@ -3,16 +3,31 @@
 require __DIR__ . '/config/connect.php';
 require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config/form.php';
 
 use Models\Pemohon;
+use Models\Kelurahan;
 
 $pemohonModel = new Pemohon($pdo);
-$pemohonItems = $pemohonModel->index();
+
+$id = input_form($_GET['id'] ?? null);
+$item = $pemohonModel->find($id);
+
+$kelurahanModel = new Kelurahan($pdo);
+$kelurahanItems = $kelurahanModel->index();
+
+if ($item === null) {
+    $_SESSION['type'] = 'danger';
+    $_SESSION['message'] = 'Data Tidak Ditemukan';
+
+    header('location: pemohon.php');
+    die();
+}
 
 ob_start();
 
 extract([
-    'pemohonItems' => $pemohonItems
+    'kelurahanItems' => $kelurahanItems
 ]);
 
 ?>
@@ -88,51 +103,43 @@ extract([
 
                     <?php require_once __DIR__ . '/components/flash.php' ?>
 
-                    <div class="mb-3">
-                        <a href="tambah_pemohon.php" class="btn btn-primary">Tambah Pemohon</a>
-                    </div>
-
+                    <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Daftar Pemohon</h3>
+                            <h3 class="card-title">Edit Pemohon</h3>
                         </div>
-
                         <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Kelurahan</th>
-                                        <th>Alamat</th>
-                                        <th>Pekerjaan</th>
-                                        <th>Option</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($pemohonItems as $index => $pemohonItem) { ?>
-                                        <tr>
-                                            <td><?php echo $index + 1 ?></td>
-                                            <td><?php echo $pemohonItem['nama'] ?></td>
-                                            <td><?php echo $pemohonItem['nama_kelurahan'] ?></td>
-                                            <td><?php echo $pemohonItem['alamat'] ?></td>
-                                            <td><?php echo $pemohonItem['pekerjaan'] ?></td>
-                                            <td>
-                                                <a href="edit_pemohon.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-warning btn-sm">
-                                                    <i class="fa fa-edit"></i> Edit
-                                                </a>
-                                                
-                                                <a href="hapus_pemohon_proses.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-trash"></i> Hapus
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
+                        <!-- form start -->
+                        <form action="edit_pemohon_proses.php" method="POST">
+                            <input type="hidden" name="id" value="<?php echo $item['id'] ?>">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Nama</label>
+                                    <input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kelurahan</label>
+                                    <select name="kelurahan_id" id="" class="form-control" required>
+                                        <option value="">Pilih Kelurahan</option>
+                                        <?php foreach ($kelurahanItems as $kelurahanItem) { ?>
+                                            <option value="<?php echo $kelurahanItem['id'] ?>" <?php echo $kelurahanItem['id'] == $item['kelurahan_id'] ? 'selected' : null ?>><?php echo $kelurahanItem['nama'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Alamat</label>
+                                    <textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" required><?php echo $item['alamat'] ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Pekerjaan</label>
+                                    <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" value="<?php echo $item['pekerjaan'] ?>" required>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
                     </div>
                     <!-- /.card -->
                 </div><!--/. container-fluid -->
