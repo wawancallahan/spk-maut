@@ -30,8 +30,9 @@ class Pemohon {
             $nama = $data['nama'] ?? null;
             $alamat = $data['alamat'] ?? null;
             $pekerjaan = $data['pekerjaan'] ?? null;
+            $kriteria = $data['kriteria'] ?? null;
     
-            if ($kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "") {
+            if ($kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== null) {
     
                 $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?, ?)";
                 
@@ -44,6 +45,10 @@ class Pemohon {
                     $pekerjaan
                 ]);
 
+                $id = $this->pdo->lastInsertId();
+
+                $this->createBobot($kriteria, $id);
+
                 return $execute ? 'success' : 'fail';
             } else {
                 return 'validation';
@@ -52,6 +57,21 @@ class Pemohon {
         } catch (Exception $e) {
             return 'fail';
         }    
+    }
+
+    public function createBobot($kriteria, $id)
+    {
+        foreach ($kriteria as $kriteriaItemId => $kriteriaItem) {
+            $query = "INSERT INTO alternatif_bobot VALUES(null, ?, ?, ?)";
+        
+            $statement = $this->pdo->prepare($query);
+            
+            $statement->execute([
+                $id,
+                $kriteriaItemId,
+                $kriteriaItem
+            ]);
+        }
     }
 
     public function find($id)
@@ -82,6 +102,32 @@ class Pemohon {
         } 
     }
 
+    public function getBobot($id)
+    {
+        try {
+            if ($id !== "") {
+    
+                $query = "SELECT * FROM alternatif_bobot WHERE alternatif_id = ?";
+                
+                $statement = $this->pdo->prepare($query);
+                
+                $statement->execute([
+                    $id,
+                ]);
+
+                if ($statement->rowCount() <= 0) {
+                    return [];
+                }
+
+                return $statement->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public function update ($data)
     {
         try {
@@ -90,8 +136,9 @@ class Pemohon {
             $nama = $data['nama'] ?? null;
             $alamat = $data['alamat'] ?? null;
             $pekerjaan = $data['pekerjaan'] ?? null;
+            $kriteria = $data['kriteria'] ?? null;
 
-            if ($id !== "" && $kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "") {
+            if ($id !== "" && $kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== null) {
     
                 $query = "UPDATE alternatif SET kelurahan_id = ?, nama = ?, alamat = ?, pekerjaan = ? WHERE id = ?";
                 
@@ -104,6 +151,9 @@ class Pemohon {
                     $pekerjaan,
                     $id
                 ]);
+
+                $this->deleteBobot($id);
+                $this->createBobot($kriteria, $id);
 
                 return $execute ? 'success' : 'fail';
             } else {
@@ -121,6 +171,29 @@ class Pemohon {
             if ($id !== "") {
     
                 $query = "DELETE FROM alternatif WHERE id = ?";
+                
+                $statement = $this->pdo->prepare($query);
+                
+                $execute = $statement->execute([
+                    $id,
+                ]);
+
+                return $execute;
+            } else {
+                return false;
+               
+            }
+        } catch (\Exception $e) {
+            return false;
+        } 
+    }
+
+    public function deleteBobot($id)
+    {
+        try {
+            if ($id !== "") {
+    
+                $query = "DELETE FROM alternatif_bobot WHERE alternatif_id = ?";
                 
                 $statement = $this->pdo->prepare($query);
                 

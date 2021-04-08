@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $kelurahan_id = input_form($_POST['kelurahan_id'] ?? null);
     $alamat = input_form($_POST['alamat'] ?? null);
     $pekerjaan = input_form($_POST['pekerjaan'] ?? null);
+    $kriteria = $_POST['kriteria'] ?? null;
 
     $pemohonModel = new Pemohon($pdo);
     $item = $pemohonModel->update([
@@ -22,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'kelurahan_id' => $kelurahan_id,
         'alamat' => $alamat,
         'pekerjaan' => $pekerjaan,
-        'id' => $id
+        'id' => $id,
+        'kriteria' => $kriteria
     ]);
 
     switch ($item) {

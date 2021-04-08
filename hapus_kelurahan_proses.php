@@ -14,18 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $item = $kelurahanModel->delete($id);
 
     switch ($item) {
-        case 'success':
+        case true:
             $_SESSION['type'] = 'success';
             $_SESSION['message'] = 'Data Berhasil Dihapus';
 
             header('location: kelurahan.php');
             die();
             break;
-        case 'fail':
-            $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Dihapus';
-            break;
-        case 'validation':
+        case false:
             $_SESSION['type'] = 'danger';
             $_SESSION['message'] = 'Data Gagal Dihapus';
             break;

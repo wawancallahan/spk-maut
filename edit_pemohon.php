@@ -7,14 +7,25 @@ require __DIR__ . '/config/form.php';
 
 use Models\Pemohon;
 use Models\Kelurahan;
+use Models\Kriteria;
 
 $pemohonModel = new Pemohon($pdo);
 
 $id = input_form($_GET['id'] ?? null);
 $item = $pemohonModel->find($id);
 
+$itemBobot = $pemohonModel->getBobot($id);
+$itemBobot = array_reduce($itemBobot, function ($output, $carry) {
+    $output[$carry['kriteria_id']] = $carry['nilai'];
+
+    return $output;
+}, []);
+
 $kelurahanModel = new Kelurahan($pdo);
 $kelurahanItems = $kelurahanModel->index();
+
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaItems = $kriteriaModel->getKriteriaAndSubKriteria();
 
 if ($item === null) {
     $_SESSION['type'] = 'danger';
@@ -134,6 +145,24 @@ extract([
                                     <label>Pekerjaan</label>
                                     <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" value="<?php echo $item['pekerjaan'] ?>" required>
                                 </div>
+
+                                <hr>
+
+                                <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                    <div class="form-group">
+                                        <label for=""><?php echo $kriteriaItem['nama'] ?></label>
+                                        <?php if ($kriteriaItem['status_sub'] == 1) { ?>
+                                            <select name="kriteria[<?php echo $kriteriaItem['id'] ?>]" id="" class="form-control" required>
+                                                <option value=""><?php echo $kriteriaItem['nama'] ?></option>
+                                                <?php foreach ($kriteriaItem['sub_kriteria'] as $sub_kriteria) { ?>
+                                                    <option value="<?php echo $sub_kriteria['id'] ?>" <?php echo ($itemBobot[$kriteriaItem['id']] ?? 0) == $sub_kriteria['id'] ? 'selected' : null ?>><?php echo $sub_kriteria['nama'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        <?php } else { ?>
+                                            <input type="number" name="kriteria[<?php echo $kriteriaItem['id'] ?>]" class="form-control" min="0" placeholder="<?php echo $kriteriaItem['nama'] ?>" value="<?php echo $itemBobot[$kriteriaItem['id']] ?? 0 ?>" required>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer">

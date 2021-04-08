@@ -47,6 +47,39 @@ class Kriteria {
         return $result;
     }
 
+    public function getKriteriaAndSubKriteria()
+    {
+        $query = "SELECT kriteria.id AS id, kriteria.nama AS nama, kriteria.status_sub AS status_sub, sub_kriteria.id AS sub_kriteria_id, sub_kriteria.nama AS sub_kriteria_nama FROM kriteria " .
+                 "LEFT JOIN sub_kriteria ON kriteria.id = sub_kriteria.kriteria_id";
+
+        $statement = $this->pdo->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        $resultReduce = [];
+
+        foreach ($result as $resultItem) {
+            if ( ! isset($resultReduce[$resultItem['id']])) {
+                $resultReduce[$resultItem['id']] = [
+                    'id' => $resultItem['id'],
+                    'nama' => $resultItem['nama'],
+                    'status_sub' => $resultItem['status_sub'],
+                    'sub_kriteria' => []
+                ];
+            }
+
+            if ($resultReduce[$resultItem['id']]['status_sub'] == 1) {
+                $resultReduce[$resultItem['id']]['sub_kriteria'][] = [
+                    'id' => $resultItem['sub_kriteria_id'],
+                    'nama' => $resultItem['sub_kriteria_nama']
+                ];
+            }
+        }
+
+        return $resultReduce;
+    }
+
     public function create ($data)
     {
         try {

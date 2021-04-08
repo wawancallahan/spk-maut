@@ -11,21 +11,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $id = input_form($_GET['id'] ?? null);
 
     $pemohonModel = new Pemohon($pdo);
-    $item = $pemohonModel->delete($id);
+    $item = $pemohonModel->deleteBobot($id);
+    if ($item) {
+        $item = $pemohonModel->delete($id);
+    }
 
     switch ($item) {
-        case 'success':
+        case true:
             $_SESSION['type'] = 'success';
             $_SESSION['message'] = 'Data Berhasil Dihapus';
 
             header('location: pemohon.php');
             die();
             break;
-        case 'fail':
-            $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Dihapus';
-            break;
-        case 'validation':
+        case false:
             $_SESSION['type'] = 'danger';
             $_SESSION['message'] = 'Data Gagal Dihapus';
             break;

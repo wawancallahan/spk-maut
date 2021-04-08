@@ -5,9 +5,13 @@ require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Models\Kelurahan;
+use Models\Kriteria;
 
 $kelurahanModel = new Kelurahan($pdo);
 $kelurahanItems = $kelurahanModel->index();
+
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaItems = $kriteriaModel->getKriteriaAndSubKriteria();
 
 ob_start();
 
@@ -118,6 +122,24 @@ extract([
                                     <label>Pekerjaan</label>
                                     <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" required>
                                 </div>
+
+                                <hr>
+
+                                <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                    <div class="form-group">
+                                        <label for=""><?php echo $kriteriaItem['nama'] ?></label>
+                                        <?php if ($kriteriaItem['status_sub'] == 1) { ?>
+                                            <select name="kriteria[<?php echo $kriteriaItem['id'] ?>]" id="" class="form-control" required>
+                                                <option value=""><?php echo $kriteriaItem['nama'] ?></option>
+                                                <?php foreach ($kriteriaItem['sub_kriteria'] as $sub_kriteria) { ?>
+                                                    <option value="<?php echo $sub_kriteria['id'] ?>"><?php echo $sub_kriteria['nama'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        <?php } else { ?>
+                                            <input type="number" name="kriteria[<?php echo $kriteriaItem['id'] ?>]" class="form-control" placeholder="<?php echo $kriteriaItem['nama'] ?>" required>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer">
