@@ -3,6 +3,7 @@
 require __DIR__ . '/config/connect.php';
 require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/middleware/hasAuth.php';
 
 ob_start();
 
