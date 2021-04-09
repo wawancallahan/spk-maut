@@ -6,11 +6,15 @@ require __DIR__ . '/config/form.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Models\Kelurahan;
+use Models\Hasil;
 
 $kelurahanModel = new Kelurahan($pdo);
+$hasilModel = new Hasil($pdo);
 
 $id = input_form($_GET['id'] ?? null);
 $item = $kelurahanModel->find($id);
+
+$hasilItems = $hasilModel->index($id);
 
 if ($item === null) {
     $_SESSION['type'] = 'danger';
@@ -21,6 +25,10 @@ if ($item === null) {
 }
 
 ob_start();
+
+extract([
+    'hasilItems' => $hasilItems
+]);
 
 ?>
 
@@ -96,7 +104,7 @@ ob_start();
                     <?php require_once __DIR__ . '/components/flash.php' ?>
 
                     <div class="mb-3">
-                        <button type="button" class="btn btn-primary" id="perhitungan">Mulai Perhitungan</a>
+                        <button type="button" class="btn btn-primary" id="perhitungan" data-id="<?php echo $item['id'] ?>">Mulai Perhitungan</a>
                     </div>
 
                     <div class="card card-primary">
@@ -115,7 +123,13 @@ ob_start();
                                     </tr>
                                 </thead>
                                 <tbody id="hasil_perhitungan">
-                                    
+                                    <?php foreach ($hasilItems as $hasilItem) { ?>
+                                        <tr>
+                                            <td><?php echo $hasilItem['no'] ?></td>
+                                            <td><?php echo $hasilItem['nama'] ?></td>
+                                            <td><?php echo $hasilItem['nilai'] ?></td>
+                                        </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
@@ -154,6 +168,26 @@ ob_start();
             let el = $(this);
 
             el.attr('disabled', 'disabled');
+
+            let id = el.data('id');
+
+            $.ajax({
+                url: 'perhitungan.php',
+                data: {
+                    kelurahan_id: id
+                },
+                type: 'POST',
+                dataType: 'json',
+            }).then(function (response) {
+                if (response.status) {
+                    $('#hasil_perhitungan').html(response.result_data_view);
+                }  
+
+                el.removeAttr('disabled');
+            }).catch(function () {
+                alert('Gagal');
+                el.removeAttr('disabled');
+            });
         });
     </script>
 

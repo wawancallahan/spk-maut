@@ -23,6 +23,37 @@ class Pemohon {
         return $result;
     }
 
+    public function getAlternatifAndBobot($id)
+    {
+        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif_bobot.kriteria_id AS kriteria_id, alternatif_bobot.nilai AS nilai " . 
+                 "FROM alternatif INNER JOIN alternatif_bobot ON alternatif.id = alternatif_bobot.alternatif_id WHERE alternatif.kelurahan_id = ?";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute([
+            $id
+        ]);
+
+        $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        $resultReduce = [];
+
+        foreach ($result as $resultItem) {
+            if ( ! isset($resultReduce[$resultItem['id']])) {
+                $resultReduce[$resultItem['id']] = [
+                    'id' => $resultItem['id'],
+                    'nama' => $resultItem['nama'],
+                    'bobot' => []
+                ];
+            }
+
+            $resultReduce[$resultItem['id']]['bobot'][$resultItem['kriteria_id']] = [
+                'kriteria_id' => $resultItem['kriteria_id'],
+                'nilai' => $resultItem['nilai']
+            ];
+        }
+
+        return $resultReduce;
+    }
+
     public function create ($data)
     {
         try {
