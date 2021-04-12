@@ -25,8 +25,9 @@ class Pemohon {
 
     public function getAlternatifAndBobot($id)
     {
-        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif_bobot.kriteria_id AS kriteria_id, alternatif_bobot.nilai AS nilai " . 
-                 "FROM alternatif INNER JOIN alternatif_bobot ON alternatif.id = alternatif_bobot.alternatif_id WHERE alternatif.kelurahan_id = ?";
+        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif_bobot.kriteria_id AS kriteria_id, sub_kriteria.bobot AS nilai " . 
+                 "FROM alternatif LEFT JOIN alternatif_bobot ON alternatif.id = alternatif_bobot.alternatif_id " .
+                 "LEFT JOIN sub_kriteria ON alternatif_bobot.sub_kriteria_id = sub_kriteria.id WHERE alternatif.kelurahan_id = ?";
         $statement = $this->pdo->prepare($query);
         $statement->execute([
             $id
