@@ -17,7 +17,7 @@ $item = $pemohonModel->find($id);
 
 $itemBobot = $pemohonModel->getBobot($id);
 $itemBobot = array_reduce($itemBobot, function ($output, $carry) {
-    $output[$carry['kriteria_id']] = $carry['nilai'];
+    $output[$carry['kriteria_id']] = $carry['sub_kriteria_id'];
 
     return $output;
 }, []);
