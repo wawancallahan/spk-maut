@@ -24,6 +24,32 @@ ob_start();
     <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
+
+    <style>
+        .separator {
+            position: relative;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .separator:before {
+            background: #ddd;
+            content: "";
+            display: block;
+            height: 1px;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            z-index: 0;
+        }
+        .separator-in {
+            line-height: 1.4;
+            background: #fff;
+            color: #bbb;
+            padding: 0 1em;
+            position: relative;
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
     <div class="login-box">
@@ -59,7 +85,30 @@ ob_start();
                 <div>
                     <button type="submit" class="btn btn-primary btn-block">Sign In</button>
                 </div>
-                <!-- /.col -->
+
+                <div class="separator">
+                    <span class="separator-in">ATAU</span>
+                </div>
+
+                <div class="text-center">
+                    <p>Tidak Dapat Login? <br> Klik <a href="#" data-toggle="modal" data-target="#modal-help">Help</a></p>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="modal-help" data-backdrop="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">HELP</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Ini Isinya
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
 
