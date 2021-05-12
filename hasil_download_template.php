@@ -30,16 +30,29 @@
             <tr>
                 <th>No</th>
                 <th>Nama</th>
+                <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                    <th><?php echo $kriteriaItem['nama'] ?></th>
+                <?php } ?>
                 <th>Nilai</th>
+                <th>Rangking</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($hasilItems as $hasilItem) { ?>
+                <?php $nilai = json_decode($hasilItem['nilai'], true); ?>
+                <?php
+                    $bobot = array_values($hasilItem['bobot']);
+                ?>
                 <tr>
-                    <td><?php echo $hasilItem['no'] ?></td> 
-                    <td><?php echo $hasilItem['nama'] ?></td> 
-                    <td><?php echo $hasilItem['nilai'] ?></td>
-                </tr> 
+                    <td><?php echo $index + 1 ?></td>
+                    <td><?php echo $hasilItem['nama'] ?></td>
+                    <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                        <?php $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id')); ?>
+                        <td><?php echo $bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null ?></td>
+                    <?php } ?>
+                    <td><?php echo $nilai['nilai_akhir'] ?></td>
+                    <td><?php echo $hasilItem['no'] ?></td>
+                </tr>
             <?php } ?>
         </tbody>
     </table>

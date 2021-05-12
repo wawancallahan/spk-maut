@@ -43,7 +43,8 @@ if ($item === null) {
 ob_start();
 
 extract([
-    'hasilItems' => $hasilItems
+    'hasilItems' => $hasilItems,
+    'kriteriaItems' => $kriteriaItems
 ]);
 
 ?>
