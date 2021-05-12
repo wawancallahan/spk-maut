@@ -13,7 +13,7 @@ class Hasil {
 
     public function index ($kelurahan_id = null)
     {
-        $query = "SELECT alternatif.nama AS nama, hasil.nilai AS nilai, hasil.no AS 'no' FROM hasil LEFT JOIN alternatif ON alternatif.id = hasil.alternatif_id ";
+        $query = "SELECT hasil.alternatif_id AS alternatif_id, alternatif.nama AS nama, hasil.nilai AS nilai, hasil.no AS 'no' FROM hasil LEFT JOIN alternatif ON alternatif.id = hasil.alternatif_id ";
         if ($kelurahan_id !== null) {
             $query .= " WHERE hasil.kelurahan_id = ?";
         }

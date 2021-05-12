@@ -160,6 +160,32 @@ class Pemohon {
         }
     }
 
+    public function getBobotIn($id)
+    {
+        try {
+            if (count($id) > 0) {
+
+                $anonymous = implode(',', array_map(function () { return  "?"; }, range(0, count($id) - 1)));
+    
+                $query = "SELECT * FROM alternatif_bobot LEFT JOIN sub_kriteria ON alternatif_bobot.sub_kriteria_id = sub_kriteria.id WHERE alternatif_id IN ($anonymous) ";
+                
+                $statement = $this->pdo->prepare($query);
+                
+                $statement->execute($id);
+
+                if ($statement->rowCount() <= 0) {
+                    return [];
+                }
+
+                return $statement->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public function update ($data)
     {
         try {

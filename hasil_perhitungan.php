@@ -8,14 +8,29 @@ require __DIR__ . '/middleware/hasAuth.php';
 
 use Models\Kelurahan;
 use Models\Hasil;
+use Models\Kriteria;
+use Models\Pemohon;
 
 $kelurahanModel = new Kelurahan($pdo);
 $hasilModel = new Hasil($pdo);
+$pemohonModel = new Pemohon($pdo);
 
 $id = input_form($_GET['id'] ?? null);
 $item = $kelurahanModel->find($id);
 
 $hasilItems = $hasilModel->index($id);
+$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+
+$hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
+    $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
+        return $item['alternatif_id'] == $bobot['alternatif_id'];
+    });
+
+    return $item;
+}, $hasilItems);
+
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaItems = $kriteriaModel->index();
 
 if ($item === null) {
     $_SESSION['type'] = 'danger';
@@ -121,15 +136,28 @@ extract([
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
+                                        <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                            <th><?php echo $kriteriaItem['nama'] ?></th>
+                                        <?php } ?>
                                         <th>Nilai</th>
+                                        <th>Rangking</th>
                                     </tr>
                                 </thead>
                                 <tbody id="hasil_perhitungan">
                                     <?php foreach ($hasilItems as $hasilItem) { ?>
+                                        <?php $nilai = json_decode($hasilItem['nilai'], true); ?>
+                                        <?php
+                                            $bobot = array_values($hasilItem['bobot']);
+                                        ?>
                                         <tr>
-                                            <td><?php echo $hasilItem['no'] ?></td>
+                                            <td><?php echo $index + 1 ?></td>
                                             <td><?php echo $hasilItem['nama'] ?></td>
-                                            <td><?php echo $hasilItem['nilai'] ?></td>
+                                            <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+                                                <?php $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id')); ?>
+                                                <td><?php echo $bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null ?></td>
+                                            <?php } ?>
+                                            <td><?php echo $nilai['nilai_akhir'] ?></td>
+                                            <td><?php echo $hasilItem['no'] ?></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

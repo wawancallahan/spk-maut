@@ -104,10 +104,15 @@ if ($kelurahan_id !== "") {
 
     $no = 1;
     foreach ($pemohonHasilItems as $pemohonId => $pemohonHasilItem) {
+
+        $nilai = json_encode([
+            'nilai_akhir' => input_form($pemohonHasilItem),
+        ]);
+
         $hasilModel->create([
             'alternatif_id' => input_form($pemohonId),
             'no' => input_form($no),
-            'nilai' => input_form($pemohonHasilItem),
+            'nilai' => $nilai,
             'kelurahan_id' => $kelurahan_id
         ]);
 
@@ -115,12 +120,34 @@ if ($kelurahan_id !== "") {
     }
 
     $hasilItems = $hasilModel->index($kelurahan_id);
+    $bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+
+    $hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
+        $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
+            return $item['alternatif_id'] == $bobot['alternatif_id'];
+        });
+
+        return $item;
+    }, $hasilItems);
 
     foreach ($hasilItems as $hasilItem) {
+
+        $nilai = json_decode($hasilItem['nilai'], true);
+        $bobot = array_values($hasilItem['bobot']);
+
+        $bobotKriteria = "";
+
+        foreach ($kriteriaItems as $kriteriaItem) {
+            $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id'));
+            $bobotKriteria .= '<td>' . ($bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null) . '</td>';
+        }
+
         $resultDataView .= '<tr>' . 
-                                '<td>' . $hasilItem['no'] . '</td>' . 
+                                '<td>' . ($index + 1) . '</td>' . 
                                 '<td>' . $hasilItem['nama'] . '</td>' . 
-                                '<td>' . $hasilItem['nilai'] . '</td>' . 
+                                $bobotKriteria .
+                                '<td>' . $nilai['nilai_akhir'] . '</td>' . 
+                                '<td>' . $hasilItem['no'] . '</td>' .
                             '</tr>';
     }
 
