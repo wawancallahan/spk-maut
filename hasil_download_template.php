@@ -38,7 +38,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($hasilItems as $hasilItem) { ?>
+            <?php foreach ($hasilItems as $index => $hasilItem) { ?>
                 <?php $nilai = json_decode($hasilItem['nilai'], true); ?>
                 <?php
                     $bobot = array_values($hasilItem['bobot']);
