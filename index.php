@@ -91,20 +91,20 @@ ob_start();
                 </div>
 
                 <div class="text-center">
-                    <p>Tidak Dapat Login? <br> Klik <a href="#" data-toggle="modal" data-target="#modal-help">Help</a></p>
+                    <p>Tidak Dapat Login? <br> Klik <a href="#" data-toggle="modal" data-target="#modal-help">Bantuan</a></p>
 
                     <!-- Modal -->
                     <div class="modal fade" id="modal-help" data-backdrop="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">HELP</h5>
+                                    <h5 class="modal-title">BANTUAN</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Ini Isinya
+                                    Jika anda tidak masuk ke dalam sistem, harap hubungi Elvanirwan, ST Selaku PPK dan RUK
                                 </div>
                             </div>
                         </div>
