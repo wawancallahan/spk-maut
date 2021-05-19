@@ -122,6 +122,7 @@ extract([
 
                     <div class="mb-3">
                         <button type="button" class="btn btn-primary" id="perhitungan" data-id="<?php echo $item['id'] ?>">Mulai Perhitungan</button>
+                        <a href="hapus_perhitungan.php?id=<?php echo $item['id'] ?>" class="btn btn-danger mr-2">Hapus Perhitungan</button>
                         <a href="hasil_download.php?id=<?php echo $item['id'] ?>" class="btn btn-primary" target="_blank">Download PDF</a>
                     </div>
 
