@@ -10,7 +10,7 @@ use Models\Pemohon;
 use Models\Kriteria;
 use Models\Hasil;
 
-$kelurahan_id = input_form($_GET['kelurahan_id'] ?? null);
+$kelurahan_id = input_form($_POST['kelurahan_id'] ?? null);
 
 $status = false;
 $resultDataView = '';
