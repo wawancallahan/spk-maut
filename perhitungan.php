@@ -130,7 +130,7 @@ if ($kelurahan_id !== "") {
         return $item;
     }, $hasilItems);
 
-    foreach ($hasilItems as $hasilItem) {
+    foreach ($hasilItems as $index => $hasilItem) {
 
         $nilai = json_decode($hasilItem['nilai'], true);
         $bobot = array_values($hasilItem['bobot']);
