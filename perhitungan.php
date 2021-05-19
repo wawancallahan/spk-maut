@@ -10,7 +10,7 @@ use Models\Pemohon;
 use Models\Kriteria;
 use Models\Hasil;
 
-$kelurahan_id = input_form($_POST['kelurahan_id'] ?? null);
+$kelurahan_id = input_form($_GET['kelurahan_id'] ?? null);
 
 $status = false;
 $resultDataView = '';
@@ -74,7 +74,13 @@ if ($kelurahan_id !== "") {
     // Normalisasi Nilai Bobot dari Matrik Keputusan
     $pemohonItems = array_map(function ($pemohon) use ($kriteriaItems) {
         $bobotItems = array_map(function ($bobot) use ($kriteriaItems) {
-            $bobot['nilai_normalisasi'] = $nilai_normalisasi = number_format($bobot['nilai'] / $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik'], 2);
+            $nilai_normalisasi = 0;
+
+            if ($kriteriaItems[$bobot['kriteria_id']]['status'] == 'benefit') {
+                $bobot['nilai_normalisasi'] = $nilai_normalisasi = number_format($bobot['nilai'] / $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik'], 2);   
+            } else if ($kriteriaItems[$bobot['kriteria_id']]['status'] == 'cost') {
+                $bobot['nilai_normalisasi'] = $nilai_normalisasi = number_format($kriteriaItems[$bobot['kriteria_id']]['nilai_matrik'] / $bobot['nilai'], 2);   
+            }
 
             $bobot['nilai_hasil'] = number_format($nilai_normalisasi * $kriteriaItems[$bobot['kriteria_id']]['nilai_normalisasi'], 2);
 
