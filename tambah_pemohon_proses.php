@@ -14,13 +14,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pekerjaan = input_form($_POST['pekerjaan'] ?? null);
     $kriteria = $_POST['kriteria'] ?? null;
 
+    $newFileName = null;
+
+    if ($_FILES['foto']['size'] !== 0) {
+        $fileTmpPath = $_FILES['foto']['tmp_name'];
+        $fileName = $_FILES['foto']['name'];
+        $fileSize = $_FILES['foto']['size'];
+        $fileType = $_FILES['foto']['type'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
+        $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+    
+        $allowedfileExtensions = array('jpg', 'gif', 'png', 'jpeg');
+        if ( ! in_array($fileExtension, $allowedfileExtensions)) {
+            $_SESSION['type'] = 'danger';
+            $_SESSION['message'] = 'Ekstensi File Hanya Boleh .jpg, .jpeg, .gif, .png';
+            
+            header('location: tambah_pemohon.php');
+            die();
+        }
+    
+        // directory in which the uploaded file will be moved
+        $uploadFileDir = './files/';
+    
+        if (!is_dir($uploadFileDir)) {
+            # jika tidak maka folder harus dibuat terlebih dahulu
+            mkdir($uploadFileDir, 0777, $rekursif = true);
+        }
+    
+        $dest_path = $uploadFileDir . $newFileName;
+    
+        if( ! move_uploaded_file($fileTmpPath, $dest_path)) {
+            $_SESSION['type'] = 'danger';
+            $_SESSION['message'] = 'Gagal Upload File';
+            
+            header('location: tambah_pemohon.php');
+            die();
+        }
+    }
+
     $pemohonModel = new Pemohon($pdo);
     $item = $pemohonModel->create([
         'nama' => $nama,
         'kelurahan_id' => $kelurahan_id,
         'alamat' => $alamat,
         'pekerjaan' => $pekerjaan,
-        'kriteria' => $kriteria
+        'kriteria' => $kriteria,
+        'file' => $newFileName
     ]);
 
     switch ($item) {

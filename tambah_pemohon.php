@@ -100,7 +100,7 @@ extract([
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form action="tambah_pemohon_proses.php" method="POST">
+                        <form action="tambah_pemohon_proses.php" method="POST" enctype="multipart/form-data">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>Nama</label>
@@ -122,6 +122,11 @@ extract([
                                 <div class="form-group">
                                     <label>Pekerjaan</label>
                                     <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Foto</label>
+                                    <input type="file" name="foto" class="form-control">
                                 </div>
 
                                 <hr>

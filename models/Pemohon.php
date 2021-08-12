@@ -63,10 +63,11 @@ class Pemohon {
             $alamat = $data['alamat'] ?? null;
             $pekerjaan = $data['pekerjaan'] ?? null;
             $kriteria = $data['kriteria'] ?? null;
+            $file = $data['file'] ?? null;
     
             if ($kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== null) {
     
-                $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?, ?)";
+                $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?, ?, ?)";
                 
                 $statement = $this->pdo->prepare($query);
                 
@@ -74,7 +75,8 @@ class Pemohon {
                     $kelurahan_id,
                     $nama,
                     $alamat,
-                    $pekerjaan
+                    $pekerjaan,
+                    $file
                 ]);
 
                 $id = $this->pdo->lastInsertId();

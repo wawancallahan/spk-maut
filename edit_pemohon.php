@@ -147,6 +147,11 @@ extract([
                                     <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" value="<?php echo $item['pekerjaan'] ?>" required>
                                 </div>
 
+                                <div class="form-group">
+                                    <label>Foto</label>
+                                    <input type="file" name="foto" class="form-control">
+                                </div>
+
                                 <hr>
 
                                 <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
