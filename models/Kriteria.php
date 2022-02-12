@@ -83,10 +83,10 @@ class Kriteria {
     public function create ($data)
     {
         try {
-            $nama = $data['nama'] ?? null;
-            $bobot = $data['bobot'] ?? null;
-            $status = $data['status'] ?? null;
-            $sub = $data['sub'] ?? null;
+            $nama = $data['nama'] ?? "";
+            $bobot = $data['bobot'] ?? "";
+            $status = $data['status'] ?? "";
+            $sub = $data['sub'] ?? "";
     
             if ($nama !== "" && $bobot !== "" && $status !== "" && $sub !== "") {
     
@@ -141,11 +141,11 @@ class Kriteria {
     public function update ($data)
     {
         try {
-            $id = $data['id'] ?? null;
-            $nama = $data['nama'] ?? null;
-            $bobot = $data['bobot'] ?? null;
-            $status = $data['status'] ?? null;
-            $sub = $data['sub'] ?? null;
+            $id = $data['id'] ?? "";
+            $nama = $data['nama'] ?? "";
+            $bobot = $data['bobot'] ?? "";
+            $status = $data['status'] ?? "";
+            $sub = $data['sub'] ?? "";
 
             if ($id !== "" && $nama !== "" && $bobot !== "" && $status !== "" && $sub !== "") {
     
@@ -160,6 +160,10 @@ class Kriteria {
                     $sub,
                     $id
                 ]);
+
+                if ($sub == "0") {
+                    $this->deleteSubKriteria($id);
+                }
 
                 return $execute ? 'success' : 'fail';
             } else {
@@ -177,6 +181,29 @@ class Kriteria {
             if ($id !== "") {
     
                 $query = "DELETE FROM kriteria WHERE id = ?";
+                
+                $statement = $this->pdo->prepare($query);
+                
+                $execute = $statement->execute([
+                    $id,
+                ]);
+
+                return $execute;
+            } else {
+                return false;
+               
+            }
+        } catch (\Exception $e) {
+            return false;
+        } 
+    }
+
+    public function deleteSubKriteria($id)
+    {
+        try {
+            if ($id !== "") {
+    
+                $query = "DELETE FROM sub_kriteria WHERE kriteria_id = ?";
                 
                 $statement = $this->pdo->prepare($query);
                 

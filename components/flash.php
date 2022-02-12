@@ -4,8 +4,7 @@
 ?>
 
 <?php if ($type !== null) { ?>
-    <div class="alert alert-<?php echo $type ?> alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <div class="alert alert-<?php echo $type ?>">
         <?php echo $message ?>
     </div>
 <?php } ?>

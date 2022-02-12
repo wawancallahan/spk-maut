@@ -7,15 +7,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\Hasil;
 
-$kelurahan_id = input_form($_GET['id'] ?? null);
-
-if ($kelurahan_id !== "") {
-    $hasilModel = new Hasil($pdo);
-    $hasilModel->delete($kelurahan_id);
-}
+$hasilModel = new Hasil($pdo);
+$hasilModel->delete();
 
 $_SESSION['type'] = 'success';
 $_SESSION['message'] = 'Data Berhasil Dihapus';
 
-header('location: hasil_perhitungan.php?id=' . $kelurahan_id);
+header('location: hasil_perhitungan.php');
 die();

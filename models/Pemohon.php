@@ -13,8 +13,7 @@ class Pemohon {
 
     public function index ()
     {
-        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif.alamat AS alamat, alternatif.pekerjaan AS pekerjaan, kelurahan.nama AS nama_kelurahan " . 
-                "FROM alternatif LEFT JOIN kelurahan ON alternatif.kelurahan_id = kelurahan.id";
+        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif.alamat AS alamat, alternatif.pekerjaan AS pekerjaan FROM alternatif";
         $statement = $this->pdo->prepare($query);
         $statement->execute();
 
@@ -23,15 +22,12 @@ class Pemohon {
         return $result;
     }
 
-    public function getAlternatifAndBobot($id)
+    public function getAlternatifAndBobot()
     {
-        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif_bobot.kriteria_id AS kriteria_id, sub_kriteria.bobot AS nilai " . 
-                 "FROM alternatif LEFT JOIN alternatif_bobot ON alternatif.id = alternatif_bobot.alternatif_id " .
-                 "LEFT JOIN sub_kriteria ON alternatif_bobot.sub_kriteria_id = sub_kriteria.id WHERE alternatif.kelurahan_id = ?";
+        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif_bobot.kriteria_id AS kriteria_id, alternatif_bobot.bobot AS nilai " . 
+                 "FROM alternatif LEFT JOIN alternatif_bobot ON alternatif.id = alternatif_bobot.alternatif_id ";
         $statement = $this->pdo->prepare($query);
-        $statement->execute([
-            $id
-        ]);
+        $statement->execute();
 
         $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -58,25 +54,21 @@ class Pemohon {
     public function create ($data)
     {
         try {
-            $kelurahan_id = $data['kelurahan_id'] ?? null;
-            $nama = $data['nama'] ?? null;
-            $alamat = $data['alamat'] ?? null;
-            $pekerjaan = $data['pekerjaan'] ?? null;
-            $kriteria = $data['kriteria'] ?? null;
-            $file = $data['file'] ?? null;
+            $nama = $data['nama'] ?? "";
+            $alamat = $data['alamat'] ?? "";
+            $pekerjaan = $data['pekerjaan'] ?? "";
+            $kriteria = $data['kriteria'] ?? "";
     
-            if ($kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== null) {
+            if ($nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== "") {
     
-                $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?, ?, ?)";
+                $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?)";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
-                    $kelurahan_id,
                     $nama,
                     $alamat,
-                    $pekerjaan,
-                    $file
+                    $pekerjaan
                 ]);
 
                 $id = $this->pdo->lastInsertId();
@@ -96,14 +88,25 @@ class Pemohon {
     public function createBobot($kriteria, $id)
     {
         foreach ($kriteria as $kriteriaItemId => $kriteriaItem) {
-            $query = "INSERT INTO alternatif_bobot VALUES(null, ?, ?, ?)";
+
+            $status_sub = $kriteriaItem['status_sub'] == "1";
+            $subKriteria = $status_sub ? $kriteriaItem['bobot'] : null;
+            $nilai = $kriteriaItem['bobot'];
+
+            if ($status_sub) {
+                $subKriteriaSelected = $this->findSubKriteria($subKriteria);
+                $nilai = $subKriteriaSelected['bobot'];
+            }
+
+            $query = "INSERT INTO alternatif_bobot VALUES(null, ?, ?, ?, ?)";
         
             $statement = $this->pdo->prepare($query);
             
             $statement->execute([
                 $id,
                 $kriteriaItemId,
-                $kriteriaItem
+                $subKriteria,
+                $nilai
             ]);
         }
     }
@@ -169,7 +172,7 @@ class Pemohon {
 
                 $anonymous = implode(',', array_map(function () { return  "?"; }, range(0, count($id) - 1)));
     
-                $query = "SELECT * FROM alternatif_bobot LEFT JOIN sub_kriteria ON alternatif_bobot.sub_kriteria_id = sub_kriteria.id WHERE alternatif_id IN ($anonymous) ";
+                $query = "SELECT * FROM alternatif_bobot WHERE alternatif_id IN ($anonymous) ";
                 
                 $statement = $this->pdo->prepare($query);
                 
@@ -191,21 +194,19 @@ class Pemohon {
     public function update ($data)
     {
         try {
-            $id = $data['id'] ?? null;
-            $kelurahan_id = $data['kelurahan_id'] ?? null;
-            $nama = $data['nama'] ?? null;
-            $alamat = $data['alamat'] ?? null;
-            $pekerjaan = $data['pekerjaan'] ?? null;
-            $kriteria = $data['kriteria'] ?? null;
+            $id = $data['id'] ?? "";
+            $nama = $data['nama'] ?? "";
+            $alamat = $data['alamat'] ?? "";
+            $pekerjaan = $data['pekerjaan'] ?? "";
+            $kriteria = $data['kriteria'] ?? "";
 
-            if ($id !== "" && $kelurahan_id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== null) {
+            if ($id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== "") {
     
-                $query = "UPDATE alternatif SET kelurahan_id = ?, nama = ?, alamat = ?, pekerjaan = ? WHERE id = ?";
+                $query = "UPDATE alternatif SET nama = ?, alamat = ?, pekerjaan = ? WHERE id = ?";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
-                    $kelurahan_id,
                     $nama,
                     $alamat,
                     $pekerjaan,
@@ -268,6 +269,33 @@ class Pemohon {
             }
         } catch (\Exception $e) {
             return false;
+        } 
+    }
+
+    public function findSubKriteria($id)
+    {
+        try {
+            if ($id !== "") {
+    
+                $query = "SELECT * FROM sub_kriteria WHERE id = ?";
+                
+                $statement = $this->pdo->prepare($query);
+                
+                $statement->execute([
+                    $id,
+                ]);
+
+                if ($statement->rowCount() <= 0) {
+                    return null;
+                }
+
+                return $statement->fetch(\PDO::FETCH_ASSOC);
+            } else {
+                return null;
+               
+            }
+        } catch (\Exception $e) {
+            return null;
         } 
     }
 }

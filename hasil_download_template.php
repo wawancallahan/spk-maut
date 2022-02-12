@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasil <?php echo $item['nama'] ?></title>
+    <title>Hasil</title>
 
     <style>
         table {
@@ -23,7 +23,7 @@
     </style>
 </head>
 <body>
-    <h1>Hasil Pemohon <?php echo $item['nama'] ?></h1>
+    <h1>Hasil Pemohon</h1>
     
     <table class="table">
         <thead>

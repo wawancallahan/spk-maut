@@ -26,9 +26,9 @@ class SubKriteria {
     public function create ($data)
     {
         try {
-            $nama = $data['nama'] ?? null;
-            $kriteria_id = $data['kriteria_id'] ?? null;
-            $bobot = $data['bobot'] ?? null;
+            $nama = $data['nama'] ?? "";
+            $kriteria_id = $data['kriteria_id'] ?? "";
+            $bobot = $data['bobot'] ?? "";
 
             if ($nama !== "" && $bobot !== "" && $kriteria_id !== "") {
     
@@ -82,10 +82,10 @@ class SubKriteria {
     public function update ($data)
     {
         try {
-            $id = $data['id'] ?? null;
-            $nama = $data['nama'] ?? null;
-            $kriteria_id = $data['kriteria_id'] ?? null;
-            $bobot = $data['bobot'] ?? null;
+            $id = $data['id'] ?? "";
+            $nama = $data['nama'] ?? "";
+            $kriteria_id = $data['kriteria_id'] ?? "";
+            $bobot = $data['bobot'] ?? "";
 
             if ($id !== "" && $nama !== "" && $bobot !== "" && $kriteria_id !== "") {
     

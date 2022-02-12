@@ -11,123 +11,69 @@ ob_start();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Dashboard 2</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-    <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="assets/img/icons/icon-48x48.png" />
 
-    <style>
-        .separator {
-            position: relative;
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        .separator:before {
-            background: #ddd;
-            content: "";
-            display: block;
-            height: 1px;
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            z-index: 0;
-        }
-        .separator-in {
-            line-height: 1.4;
-            background: #fff;
-            color: #bbb;
-            padding: 0 1em;
-            position: relative;
-        }
-    </style>
+	<title>Login</title>
+
+	<link href="assets/css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body class="hold-transition login-page">
-    <div class="login-box">
-    <div class="login-logo">
-        <a href="#"><b>Admin</b>LTE</a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="card">
-        <div class="card-body login-card-body">
-            <p class="login-box-msg">Sign in to start your session</p>
 
-            <?php require_once __DIR__ . '/components/flash.php' ?>
+<body>
+	<main class="d-flex w-100">
+		<div class="container d-flex flex-column">
+			<div class="row vh-100">
+				<div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+					<div class="d-table-cell align-middle">
 
-            <form action="login_proses.php" method="post">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Username" name="username" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
-                        </div>
-                    </div>
-                </div>
+						<div class="text-center mt-4">
+							<h1 class="h2">Sistem Penunjang Keputusan</h1>
+							<p class="lead">
+								Log In untuk melanjutkan
+							</p>
+						</div>
 
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control" placeholder="Password" name="password" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
-                        </div>
-                    </div>
-                </div>
+						<div class="card">
+							<div class="card-body">
+								<div class="m-sm-4">
+									<form action="login_proses.php" method="POST">
+										<div class="mb-3">
+											<label class="form-label">Username</label>
+											<input class="form-control form-control-lg" type="text" name="username" required />
+										</div>
+										<div class="mb-3">
+											<label class="form-label">Password</label>
+											<input class="form-control form-control-lg" type="password" name="password" required />
+										</div>
+										<div class="text-center mt-3">
+                                            <button type="submit" class="btn btn-lg btn-primary">Log In</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
 
-                <div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
 
-                <div class="separator">
-                    <span class="separator-in">ATAU</span>
-                </div>
+	<script src="assets/js/app.js"></script>
 
-                <div class="text-center">
-                    <p>Tidak Dapat Login? <br> Klik <a href="#" data-toggle="modal" data-target="#modal-help">Bantuan</a></p>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="modal-help" data-backdrop="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">BANTUAN</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    Jika anda tidak masuk ke dalam sistem, harap hubungi Elvanirwan, ST Selaku PPK dan RUK
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-        <!-- /.login-card-body -->
-    </div>
-    </div>
-    <!-- /.login-box -->
-    <!-- jQuery -->
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- overlayScrollbars -->
-    <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="dist/js/adminlte.js"></script>
 </body>
-</html>
 
+</html>
 
 <?php
 
