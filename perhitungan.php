@@ -19,85 +19,66 @@ $pemohonModel = new Pemohon($pdo);
 $kriteriaItems = $kriteriaModel->index();
 $pemohonItems = $pemohonModel->getAlternatifAndBobot();
 
-// Perhitungan SAW
+// Perhitungan Moora
 
-// Hitung Total Bobot Kriteria
-$totalKriteriaBobot = array_reduce($kriteriaItems, function ($output, $carry) {
-    $output += $carry['bobot'];
-
-    return $output;
-}, 0);
-
-// Hitung Normalisasi Bobot Kriteria
-$kriteriaItems = array_map(function ($kriteria) use ($totalKriteriaBobot) {
-    $kriteria['nilai_normalisasi'] = number_format($kriteria['bobot'] / $totalKriteriaBobot, 2);
-
-    return $kriteria;
-}, $kriteriaItems);
-
-// Matrik Keputusan
-$kriteriaItems = array_map(function ($kriteria) use ($pemohonItems) {
-    $nilai_matrik = 0;
-
-    if ($kriteria['status'] == 'benefit') {
-        $nilai_matrik = max(
-            array_map(function ($pemohon) use ($kriteria) {
-                return $pemohon['bobot'][$kriteria['id']]['nilai'] ?? 0;
-            }, $pemohonItems)
-        );
-    } else if ($kriteria['status'] == 'cost') {
-        $nilai_matrik = min(
-            array_map(function ($pemohon) use ($kriteria) {
-                return $pemohon['bobot'][$kriteria['id']]['nilai'] ?? 0;
-            }, $pemohonItems)
-        );
-    }
-
-    $kriteria['nilai_matrik'] = $nilai_matrik;
-
-    return $kriteria;
-}, $kriteriaItems);
-
-// Normalisasi Id Kriteria
-$kriteriaIdItems = [];
+$totalBobotPemohonKriteria = [];
 
 foreach ($kriteriaItems as $kriteriaItem) {
-    $kriteriaIdItems[$kriteriaItem['id']] = $kriteriaItem;
-}
-
-$kriteriaItems = $kriteriaIdItems;
-
-// Normalisasi Nilai Bobot dari Matrik Keputusan
-$pemohonItems = array_map(function ($pemohon) use ($kriteriaItems) {
-    $bobotItems = array_map(function ($bobot) use ($kriteriaItems) {
-        $nilai_normalisasi = 0;
-
-        if ($kriteriaItems[$bobot['kriteria_id']]['status'] == 'benefit') {
-            $bobot['nilai_normalisasi'] = $nilai_normalisasi = number_format($bobot['nilai'] / $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik'], 2);   
-        } else if ($kriteriaItems[$bobot['kriteria_id']]['status'] == 'cost') {
-            $bobot['nilai_normalisasi'] = $nilai_normalisasi = number_format($kriteriaItems[$bobot['kriteria_id']]['nilai_matrik'] / $bobot['nilai'], 2);   
-        }
-
-        $bobot['nilai_hasil'] = number_format($nilai_normalisasi * $kriteriaItems[$bobot['kriteria_id']]['nilai_normalisasi'], 2);
-
-        return $bobot;
-    }, $pemohon['bobot']);
-
-    $total = array_reduce($bobotItems, function ($output, $carry) {
-        $output += $carry['nilai_hasil'];
+    $totalBobotPemohonKriteria[$kriteriaItem['id']] = sqrt(array_reduce($pemohonItems, function ($output, $item) use ($kriteriaItem) {
+        $output += pow($item['bobot'][$kriteriaItem['id']]['nilai'], 2);
 
         return $output;
-    }, 0);
+    }, 0));
+}
 
-    $pemohon['bobot'] = $bobotItems;
-    $pemohon['total'] = $total;
+$kriteriaBobot = [];
+$kriteriaStatus = [];
 
-    return $pemohon;
+foreach ($kriteriaItems as $kriteriaItem) {
+    $kriteriaBobot[$kriteriaItem['id']] = number_format($kriteriaItem['bobot'], 2);
+    $kriteriaStatus[$kriteriaItem['id']] = $kriteriaItem['status'];
+}
+
+$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaItems, $totalBobotPemohonKriteria) {
+    $pemohonItem['bobot'] = array_map(function ($pemohonItemBobot) use ($totalBobotPemohonKriteria ) {
+        $pemohonItemBobot['nilai_normalisasi'] = number_format($pemohonItemBobot['nilai'] / $totalBobotPemohonKriteria[$pemohonItemBobot['kriteria_id']], 4);
+
+        return $pemohonItemBobot;
+    }, $pemohonItem['bobot']);
+
+    return $pemohonItem;
+}, $pemohonItems);
+
+$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaBobot) {
+    $pemohonItem['bobot'] = array_map(function ($pemohonItemBobot) use ($kriteriaBobot) {
+        $pemohonItemBobot['nilai_normalisasi_kriteria'] = number_format(
+            $pemohonItemBobot['nilai_normalisasi'] * $kriteriaBobot[$pemohonItemBobot['kriteria_id']]
+        , 4);
+
+        return $pemohonItemBobot;
+    }, $pemohonItem['bobot']);
+
+    return $pemohonItem;
+}, $pemohonItems);
+
+$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaStatus) {
+    $max = $min = 0;
+    foreach ($pemohonItem['bobot'] as $pemohonBobot) {
+        if ($kriteriaStatus[$pemohonBobot['kriteria_id']] == 'benefit') {
+            $max += $pemohonBobot['nilai_normalisasi_kriteria'];
+        } else {
+            $min += $pemohonBobot['nilai_normalisasi_kriteria'];
+        }
+    }
+
+    $pemohonItem['nilai_akhir'] = number_format($max - $min, 4);
+
+    return $pemohonItem;
 }, $pemohonItems);
 
 $pemohonHasilItems = [];
 foreach ($pemohonItems as $pemohonItem) {
-    $pemohonHasilItems[$pemohonItem['id']] = $pemohonItem['total'];
+    $pemohonHasilItems[$pemohonItem['id']] = $pemohonItem['nilai_akhir'];
 }	
 
 arsort($pemohonHasilItems);

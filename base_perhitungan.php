@@ -11,11 +11,11 @@ $kriteria = [
 ];
 
 $alternatif = [
-    [70, 80, 90, 70, 90],
-    [90, 90, 80, 70, 70],
-    [90, 80, 70, 80, 90],
-    [80, 70, 80, 70, 70],
-    [70, 80, 70, 70, 80]
+    [70, 80, 90, 70, 90], // ALTERNATIF 1
+    [90, 90, 80, 70, 70], // ALTERNATIF 2
+    [90, 80, 70, 80, 90], // ALTERNATIF 3
+    [80, 70, 80, 70, 70], // ALTERNATIF 4
+    [70, 80, 70, 70, 80] // ALTERNATIF 5
 ];
 
 foreach ($kriteria as $kriteriaKey => $kriteriaItem) {

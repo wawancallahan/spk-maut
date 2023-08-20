@@ -90,7 +90,7 @@ ob_start();
 
                                     <div class="mb-3">
                                         <label class="form-label">Bobot</label>
-                                        <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" step="0.1" value="<?php echo $item['bobot'] ?>" required>
+                                        <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" step="0.01" value="<?php echo $item['bobot'] ?>" required>
                                     </div>
 
                                     <div class="mb-3">
