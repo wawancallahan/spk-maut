@@ -96,7 +96,7 @@ extract([
 
                                     <div class="form-group">
                                         <label>Bobot</label>
-                                        <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" value="0" required>
+                                        <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" step="0.01" value="0" required>
                                     </div>
 
                                 </div>
