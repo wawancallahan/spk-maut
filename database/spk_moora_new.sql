@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 20, 2023 at 02:16 PM
+-- Generation Time: Aug 20, 2023 at 02:20 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -75,6 +75,13 @@ CREATE TABLE `kriteria` (
   `status_sub` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `kriteria`
+--
+
+INSERT INTO `kriteria` (`id`, `nama`, `bobot`, `status`, `status_sub`) VALUES
+(1, 'TES 1', 12.00, 'benefit', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -85,8 +92,15 @@ CREATE TABLE `sub_kriteria` (
   `id` int(11) NOT NULL,
   `kriteria_id` int(11) NOT NULL,
   `nama` varchar(255) NOT NULL,
-  `bobot` int(11) NOT NULL
+  `bobot` float(8,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sub_kriteria`
+--
+
+INSERT INTO `sub_kriteria` (`id`, `kriteria_id`, `nama`, `bobot`) VALUES
+(1, 1, '7-10', 0.00);
 
 -- --------------------------------------------------------
 
@@ -180,13 +194,13 @@ ALTER TABLE `hasil`
 -- AUTO_INCREMENT for table `kriteria`
 --
 ALTER TABLE `kriteria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `sub_kriteria`
 --
 ALTER TABLE `sub_kriteria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`
