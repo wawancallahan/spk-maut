@@ -13,14 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = input_form($_POST['id'] ?? null);
     $nama = input_form($_POST['nama'] ?? null);
     $alamat = input_form($_POST['alamat'] ?? null);
-    $pekerjaan = input_form($_POST['pekerjaan'] ?? null);
     $kriteria = $_POST['kriteria'] ?? null;
 
     $pemohonModel = new Pemohon($pdo);
     $item = $pemohonModel->update([
         'nama' => $nama,
         'alamat' => $alamat,
-        'pekerjaan' => $pekerjaan,
         'id' => $id,
         'kriteria' => $kriteria
     ]);

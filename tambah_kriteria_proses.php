@@ -10,14 +10,12 @@ use Models\Kriteria;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama = input_form($_POST['nama'] ?? null);
     $bobot = input_form($_POST['bobot'] ?? null);
-    $status = input_form($_POST['status'] ?? null);
     $sub = input_form($_POST['sub'] ?? null);
 
     $kriteriaModel = new Kriteria($pdo);
     $item = $kriteriaModel->create([
         'nama' => $nama,
         'bobot' => $bobot,
-        'status' => $status,
         'sub' => $sub
     ]);
 

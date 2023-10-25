@@ -19,120 +19,145 @@ $pemohonModel = new Pemohon($pdo);
 $kriteriaItems = $kriteriaModel->index();
 $pemohonItems = $pemohonModel->getAlternatifAndBobot();
 
-// Perhitungan Moora
+try {
+    // Perhitungan Maut
 
-$totalBobotPemohonKriteria = [];
-
-foreach ($kriteriaItems as $kriteriaItem) {
-    $totalBobotPemohonKriteria[$kriteriaItem['id']] = sqrt(array_reduce($pemohonItems, function ($output, $item) use ($kriteriaItem) {
-        $output += pow($item['bobot'][$kriteriaItem['id']]['nilai'], 2);
+    // Hitung Total Bobot Kriteria
+    $totalKriteriaBobot = array_reduce($kriteriaItems, function ($output, $carry) {
+        $output += $carry['bobot'];
 
         return $output;
-    }, 0));
-}
+    }, 0);
+    //
 
-$kriteriaBobot = [];
-$kriteriaStatus = [];
+    // Hitung Normalisasi Bobot Kriteria
+    $kriteriaItems = array_map(function ($kriteria) use ($totalKriteriaBobot) {
+        $kriteria['nilai_normalisasi'] = number_format($kriteria['bobot'] / $totalKriteriaBobot, 3);
 
-foreach ($kriteriaItems as $kriteriaItem) {
-    $kriteriaBobot[$kriteriaItem['id']] = number_format($kriteriaItem['bobot'], 2);
-    $kriteriaStatus[$kriteriaItem['id']] = $kriteriaItem['status'];
-}
+        return $kriteria;
+    }, $kriteriaItems);
+    //
 
-$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaItems, $totalBobotPemohonKriteria) {
-    $pemohonItem['bobot'] = array_map(function ($pemohonItemBobot) use ($totalBobotPemohonKriteria ) {
-        $pemohonItemBobot['nilai_normalisasi'] = number_format($pemohonItemBobot['nilai'] / $totalBobotPemohonKriteria[$pemohonItemBobot['kriteria_id']], 4);
+    // PERHITUNGAN NILAI MATRIK MIN MAX
+    $kriteriaItems = array_map(function ($kriteria) use ($pemohonItems) {
+        $nilai_matrik_max = max(
+            array_map(function ($pemohon) use ($kriteria) {
+                return $pemohon['bobot'][$kriteria['id']]['nilai'] ?? 0;
+            }, $pemohonItems)
+        );
 
-        return $pemohonItemBobot;
-    }, $pemohonItem['bobot']);
+        $nilai_matrik_min = min(
+            array_map(function ($pemohon) use ($kriteria) {
+                return $pemohon['bobot'][$kriteria['id']]['nilai'] ?? 0;
+            }, $pemohonItems)
+        );
 
-    return $pemohonItem;
-}, $pemohonItems);
+        $kriteria['nilai_matrik_min'] = $nilai_matrik_min;
+        $kriteria['nilai_matrik_max'] = $nilai_matrik_max;
 
-$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaBobot) {
-    $pemohonItem['bobot'] = array_map(function ($pemohonItemBobot) use ($kriteriaBobot) {
-        $pemohonItemBobot['nilai_normalisasi_kriteria'] = number_format(
-            $pemohonItemBobot['nilai_normalisasi'] * $kriteriaBobot[$pemohonItemBobot['kriteria_id']]
-        , 4);
+        return $kriteria;
+    }, $kriteriaItems);
 
-        return $pemohonItemBobot;
-    }, $pemohonItem['bobot']);
-
-    return $pemohonItem;
-}, $pemohonItems);
-
-$pemohonItems = array_map(function ($pemohonItem) use ($kriteriaStatus) {
-    $max = $min = 0;
-    foreach ($pemohonItem['bobot'] as $pemohonBobot) {
-        if ($kriteriaStatus[$pemohonBobot['kriteria_id']] == 'benefit') {
-            $max += $pemohonBobot['nilai_normalisasi_kriteria'];
-        } else {
-            $min += $pemohonBobot['nilai_normalisasi_kriteria'];
-        }
-    }
-
-    $pemohonItem['nilai_akhir'] = number_format($max - $min, 4);
-
-    return $pemohonItem;
-}, $pemohonItems);
-
-$pemohonHasilItems = [];
-foreach ($pemohonItems as $pemohonItem) {
-    $pemohonHasilItems[$pemohonItem['id']] = $pemohonItem['nilai_akhir'];
-}	
-
-arsort($pemohonHasilItems);
-
-$hasilModel->delete();
-
-$no = 1;
-foreach ($pemohonHasilItems as $pemohonId => $pemohonHasilItem) {
-
-    $nilai = json_encode([
-        'nilai_akhir' => input_form($pemohonHasilItem),
-    ]);
-
-    $hasilModel->create([
-        'alternatif_id' => input_form($pemohonId),
-        'no' => input_form($no),
-        'nilai' => $nilai
-    ]);
-
-    $no++;
-}
-
-$hasilItems = $hasilModel->index();
-$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
-
-$hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
-    $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
-        return $item['alternatif_id'] == $bobot['alternatif_id'];
-    });
-
-    return $item;
-}, $hasilItems);
-
-foreach ($hasilItems as $index => $hasilItem) {
-
-    $nilai = json_decode($hasilItem['nilai'], true);
-    $bobot = array_values($hasilItem['bobot']);
-
-    $bobotKriteria = "";
+    // Normalisasi Id Kriteria
+    $kriteriaIdItems = [];
 
     foreach ($kriteriaItems as $kriteriaItem) {
-        $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id'));
-        $bobotKriteria .= '<td>' . ($bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null) . '</td>';
+        $kriteriaIdItems[$kriteriaItem['id']] = $kriteriaItem;
     }
 
-    $resultDataView .= '<tr>' . 
-                            '<td>' . ($index + 1) . '</td>' . 
-                            '<td>' . $hasilItem['nama'] . '</td>' . 
-                            $bobotKriteria .
-                            '<td>' . $nilai['nilai_akhir'] . '</td>' . 
-                            '<td>' . $hasilItem['no'] . '</td>' .
-                        '</tr>';
-}
+    $kriteriaItems = $kriteriaIdItems;
+    //
 
-echo json_encode([
-    'result_data_view' => $resultDataView,
-]);
+    // PERHITUNGAN NILAI BOBOT MATRIK
+    $pemohonItems = array_map(function ($pemohon) use ($kriteriaItems) {
+        $bobotItems = array_map(function ($bobot) use ($kriteriaItems) {
+            // PERHITUNGAN NILAI UTILITY
+            $atas = $bobot['nilai'] - $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_min'];
+            $bawah = $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_max'] - $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_min'];
+            
+            $nilai_normalisasi = number_format($atas / $bawah, 3);
+
+            $bobot['nilai_normalisasi'] = $nilai_normalisasi;   
+
+            $bobot['nilai_hasil'] = number_format($nilai_normalisasi * $kriteriaItems[$bobot['kriteria_id']]['nilai_normalisasi'], 3);
+            //
+
+            return $bobot;
+        }, $pemohon['bobot']);
+
+        // PERHITUNGAN TOTAL NILAI BOBOT HASIL UTILITY
+        $total = array_reduce($bobotItems, function ($output, $carry) {
+            $output += $carry['nilai_hasil'];
+
+            return $output;
+        }, 0);
+        //
+
+        $pemohon['bobot'] = $bobotItems;
+        $pemohon['total'] = $total;
+
+        return $pemohon;
+    }, $pemohonItems);
+
+    // NORMALISASI ID ALTERNAITF
+    $pemohonHasilItems = [];
+    foreach ($pemohonItems as $pemohonItem) {
+        $pemohonHasilItems[$pemohonItem['id']] = $pemohonItem['total'];
+    }	
+    //	
+
+    arsort($pemohonHasilItems);
+
+    $hasilModel->delete();
+
+    $no = 1;
+    foreach ($pemohonHasilItems as $pemohonId => $pemohonHasilItem) {
+        $hasilModel->create([
+            'alternatif_id' => input_form($pemohonId),
+            'no' => input_form($no),
+            'nilai' => input_form($pemohonHasilItem)
+        ]);
+
+        $no++;
+    }
+
+    $hasilItems = $hasilModel->index();
+    $bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+
+    $hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
+        $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
+            return $item['alternatif_id'] == $bobot['alternatif_id'];
+        });
+
+        return $item;
+    }, $hasilItems);
+
+    foreach ($hasilItems as $index => $hasilItem) {
+        $bobot = array_values($hasilItem['bobot']);
+
+        $bobotKriteria = "";
+
+        foreach ($kriteriaItems as $kriteriaItem) {
+            $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id'));
+            $bobotKriteria .= '<td>' . ($bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null) . '</td>';
+        }
+
+        $resultDataView .= '<tr>' . 
+                                '<td>' . ($index + 1) . '</td>' . 
+                                '<td>' . $hasilItem['nama'] . '</td>' . 
+                                $bobotKriteria .
+                                '<td>' . $hasilItem['nilai'] . '</td>' . 
+                                '<td>' . $hasilItem['no'] . '</td>' .
+                            '</tr>';
+    }
+
+    echo json_encode([
+        'status' => true,
+        'result_data_view' => $resultDataView,
+    ]);
+} catch (\Exception $e) {
+    echo json_encode([
+        'status' => false,
+        'result_data_view' => ''
+    ]);
+}

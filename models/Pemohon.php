@@ -13,7 +13,7 @@ class Pemohon {
 
     public function index ()
     {
-        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif.alamat AS alamat, alternatif.pekerjaan AS pekerjaan FROM alternatif";
+        $query = "SELECT alternatif.id AS id, alternatif.nama AS nama, alternatif.alamat AS alamat FROM alternatif";
         $statement = $this->pdo->prepare($query);
         $statement->execute();
 
@@ -56,19 +56,17 @@ class Pemohon {
         try {
             $nama = $data['nama'] ?? "";
             $alamat = $data['alamat'] ?? "";
-            $pekerjaan = $data['pekerjaan'] ?? "";
             $kriteria = $data['kriteria'] ?? "";
     
-            if ($nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== "") {
+            if ($nama !== "" && $alamat !== "" && $kriteria !== "") {
     
-                $query = "INSERT INTO alternatif VALUES(null, ?, ?, ?)";
+                $query = "INSERT INTO alternatif VALUES(null, ?, ?)";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
                     $nama,
-                    $alamat,
-                    $pekerjaan
+                    $alamat
                 ]);
 
                 $id = $this->pdo->lastInsertId();
@@ -197,19 +195,17 @@ class Pemohon {
             $id = $data['id'] ?? "";
             $nama = $data['nama'] ?? "";
             $alamat = $data['alamat'] ?? "";
-            $pekerjaan = $data['pekerjaan'] ?? "";
             $kriteria = $data['kriteria'] ?? "";
 
-            if ($id !== "" && $nama !== "" && $alamat !== "" && $pekerjaan !== "" && $kriteria !== "") {
+            if ($id !== "" && $nama !== "" && $alamat !== "" && $kriteria !== "") {
     
-                $query = "UPDATE alternatif SET nama = ?, alamat = ?, pekerjaan = ? WHERE id = ?";
+                $query = "UPDATE alternatif SET nama = ?, alamat = ? WHERE id = ?";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
                     $nama,
                     $alamat,
-                    $pekerjaan,
                     $id
                 ]);
 

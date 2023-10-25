@@ -83,7 +83,6 @@ extract([
                                             <th>No</th>
                                             <th>Nama</th>
                                             <th>Alamat</th>
-                                            <th>Pekerjaan</th>
                                             <th>Option</th>
                                         </tr>
                                     </thead>
@@ -93,7 +92,6 @@ extract([
                                                 <td><?php echo $index + 1 ?></td>
                                                 <td><?php echo $pemohonItem['nama'] ?></td>
                                                 <td><?php echo $pemohonItem['alamat'] ?></td>
-                                                <td><?php echo $pemohonItem['pekerjaan'] ?></td>
                                                 <td>
                                                     <a href="edit_pemohon.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-warning btn-sm">
                                                         <i class="fa fa-edit"></i> Edit

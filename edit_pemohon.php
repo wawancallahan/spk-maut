@@ -108,10 +108,6 @@ extract([
                                         <label>Alamat</label>
                                         <textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" required><?php echo $item['alamat'] ?></textarea>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Pekerjaan</label>
-                                        <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" value="<?php echo $item['pekerjaan'] ?>" required>
-                                    </div>
 
                                     <hr>
 

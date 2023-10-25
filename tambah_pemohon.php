@@ -82,11 +82,6 @@ extract([
                                         <label>Alamat</label>
                                         <textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" required></textarea>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Pekerjaan</label>
-                                        <input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" required>
-                                    </div>
-
                                     <hr>
 
                                     <?php foreach ($kriteriaItems as $kriteriaItem) { ?>

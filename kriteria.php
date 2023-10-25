@@ -83,7 +83,6 @@ extract([
                                             <th>No</th>
                                             <th>Nama</th>
                                             <th>Bobot</th>
-                                            <th>Status</th>
                                             <th>Sub</th>
                                             <th>Option</th>
                                         </tr>
@@ -94,7 +93,6 @@ extract([
                                                 <td><?php echo $index + 1 ?></td>
                                                 <td><?php echo $kriteriaItem['nama'] ?></td>
                                                 <td><?php echo $kriteriaItem['bobot'] ?></td>
-                                                <td><?php echo $kriteriaItem['status'] ?></td>
                                                 <td><?php echo $kriteriaItem['status_sub'] == 1 ? 'Ya' : 'Tidak' ?></td>
                                                 <td>
                                                     <a href="edit_kriteria.php?id=<?php echo $kriteriaItem['id'] ?>" class="btn btn-warning btn-sm">

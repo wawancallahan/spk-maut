@@ -94,15 +94,6 @@ ob_start();
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Status</label>
-                                        <select name="status" id="" class="form-control" required>
-                                            <option value="">Pilih Status</option>
-                                            <option value="benefit" <?php echo $item['status'] == 'benefit' ? 'selected' : null ?>>Benefit</option>
-                                            <option value="cost" <?php echo $item['status'] == 'cost' ? 'selected' : null ?>>Cost</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
                                         <label class="form-label">Sub</label>
                                         <select name="sub" id="" class="form-control" required>
                                             <option value="">Pilih Sub</option>

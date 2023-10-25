@@ -112,7 +112,6 @@ extract([
                                     </thead>
                                     <tbody id="hasil_perhitungan">
                                         <?php foreach ($hasilItems as $index => $hasilItem) { ?>
-                                            <?php $nilai = json_decode($hasilItem['nilai'], true); ?>
                                             <?php
                                                 $bobot = array_values($hasilItem['bobot']);
                                             ?>
@@ -123,7 +122,7 @@ extract([
                                                     <?php $bobotKey = array_search($kriteriaItem['id'], array_column($bobot, 'kriteria_id')); ?>
                                                     <td><?php echo $bobotKey !== false ? $bobot[$bobotKey]['bobot'] : null ?></td>
                                                 <?php } ?>
-                                                <td><?php echo $nilai['nilai_akhir'] ?></td>
+                                                <td><?php echo $hasilItem['nilai'] ?></td>
                                                 <td><?php echo $hasilItem['no'] ?></td>
                                             </tr>
                                         <?php } ?>

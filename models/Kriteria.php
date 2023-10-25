@@ -85,19 +85,17 @@ class Kriteria {
         try {
             $nama = $data['nama'] ?? "";
             $bobot = $data['bobot'] ?? "";
-            $status = $data['status'] ?? "";
             $sub = $data['sub'] ?? "";
     
-            if ($nama !== "" && $bobot !== "" && $status !== "" && $sub !== "") {
+            if ($nama !== "" && $bobot !== "" && $sub !== "") {
     
-                $query = "INSERT INTO kriteria VALUES(null, ?, ?, ?, ?)";
+                $query = "INSERT INTO kriteria VALUES(null, ?, ?, ?)";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
                     $nama,
                     $bobot,
-                    $status,
                     $sub
                 ]);
 
@@ -144,19 +142,17 @@ class Kriteria {
             $id = $data['id'] ?? "";
             $nama = $data['nama'] ?? "";
             $bobot = $data['bobot'] ?? "";
-            $status = $data['status'] ?? "";
             $sub = $data['sub'] ?? "";
 
-            if ($id !== "" && $nama !== "" && $bobot !== "" && $status !== "" && $sub !== "") {
+            if ($id !== "" && $nama !== "" && $bobot !== "" && $sub !== "") {
     
-                $query = "UPDATE kriteria SET nama = ?, bobot = ?, status = ?, status_sub = ? WHERE id = ?";
+                $query = "UPDATE kriteria SET nama = ?, bobot = ?, status_sub = ? WHERE id = ?";
                 
                 $statement = $this->pdo->prepare($query);
                 
                 $execute = $statement->execute([
                     $nama,
                     $bobot,
-                    $status,
                     $sub,
                     $id
                 ]);

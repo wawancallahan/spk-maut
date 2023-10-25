@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `alternatif` (
   `id` int(11) NOT NULL,
   `nama` varchar(255) NOT NULL,
-  `alamat` text DEFAULT NULL,
+  `alamat` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -70,16 +70,8 @@ CREATE TABLE `kriteria` (
   `id` int(11) NOT NULL,
   `nama` varchar(255) NOT NULL,
   `bobot` float(8,2) NOT NULL,
-  `status` varchar(255) NOT NULL,
   `status_sub` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `kriteria`
---
-
-INSERT INTO `kriteria` (`id`, `nama`, `bobot`, `status`, `status_sub`) VALUES
-(1, 'TES 1', 12.00, 'benefit', 1);
 
 -- --------------------------------------------------------
 
@@ -93,13 +85,6 @@ CREATE TABLE `sub_kriteria` (
   `nama` varchar(255) NOT NULL,
   `bobot` float(8,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sub_kriteria`
---
-
-INSERT INTO `sub_kriteria` (`id`, `kriteria_id`, `nama`, `bobot`) VALUES
-(1, 1, '7-10', 0.00);
 
 -- --------------------------------------------------------
 

@@ -77,15 +77,6 @@ ob_start();
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Status</label>
-                                        <select name="status" id="" class="form-control" required>
-                                            <option value="">Pilih Status</option>
-                                            <option value="benefit">Benefit</option>
-                                            <option value="cost">Cost</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label>Sub</label>
                                         <select name="sub" id="" class="form-control" required>
                                             <option value="">Pilih Sub</option>
