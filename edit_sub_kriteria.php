@@ -95,7 +95,7 @@ extract([
                                 <input type="hidden" name="id" value="<?php echo $item['id'] ?>">
                                 <div class="card-body">
 
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Kriteria</label>
                                         <select name="kriteria_id" id="" class="form-control" required>
                                             <option value="">Pilih Kriteria</option>
@@ -105,12 +105,12 @@ extract([
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Nama</label>
                                         <input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" required>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Bobot</label>
                                         <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" step="0.01" value="<?php echo $item['bobot'] ?>" required>
                                     </div>

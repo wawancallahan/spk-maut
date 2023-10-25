@@ -66,17 +66,17 @@ ob_start();
                             <!-- form start -->
                             <form action="tambah_kriteria_proses.php" method="POST">
                                 <div class="card-body">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Nama</label>
                                         <input type="text" name="nama" class="form-control" placeholder="Nama" required>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Bobot</label>
                                         <input type="number" name="bobot" class="form-control" placeholder="Bobot" min="0" step="0.01" value="0" required>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Sub</label>
                                         <select name="sub" id="" class="form-control" required>
                                             <option value="">Pilih Sub</option>

@@ -7,25 +7,11 @@ require __DIR__ . '/config/form.php';
 require __DIR__ . '/middleware/hasAuth.php';
 
 use Models\Pemohon;
-use Models\Kriteria;
 
 $pemohonModel = new Pemohon($pdo);
 
 $id = input_form($_GET['id'] ?? null);
 $item = $pemohonModel->find($id);
-
-$itemBobot = $pemohonModel->getBobot($id);
-$itemBobot = array_reduce($itemBobot, function ($output, $carry) {
-    $output[$carry['kriteria_id']] = [
-        'bobot' => $carry['bobot'],
-        'sub_kriteria_id' => $carry['sub_kriteria_id']
-    ];
-
-    return $output;
-}, []);
-
-$kriteriaModel = new Kriteria($pdo);
-$kriteriaItems = $kriteriaModel->getKriteriaAndSubKriteria();
 
 if ($item === null) {
     $_SESSION['type'] = 'danger';
@@ -100,33 +86,14 @@ extract([
                             <form action="edit_pemohon_proses.php" method="POST">
                                 <input type="hidden" name="id" value="<?php echo $item['id'] ?>">
                                 <div class="card-body">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Nama</label>
                                         <input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" required>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Alamat</label>
                                         <textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" required><?php echo $item['alamat'] ?></textarea>
                                     </div>
-
-                                    <hr>
-
-                                    <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
-                                        <div class="form-group">
-                                            <label for=""><?php echo $kriteriaItem['nama'] ?></label>
-                                            <?php if ($kriteriaItem['status_sub'] == 1) { ?>
-                                                <select name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" id="" class="form-control" required>
-                                                    <option value=""><?php echo $kriteriaItem['nama'] ?></option>
-                                                    <?php foreach ($kriteriaItem['sub_kriteria'] as $sub_kriteria) { ?>
-                                                        <option value="<?php echo $sub_kriteria['id'] ?>" <?php echo ($itemBobot[$kriteriaItem['id']]['sub_kriteria_id'] ?? 0) == $sub_kriteria['id'] ? 'selected' : null ?>><?php echo $sub_kriteria['nama'] ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            <?php } else { ?>
-                                                <input type="number" name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" class="form-control" min="0" placeholder="<?php echo $kriteriaItem['nama'] ?>" value="<?php echo $itemBobot[$kriteriaItem['id']]['bobot'] ?? 0 ?>" required>
-                                            <?php } ?>
-                                        </div>
-                                        <input type="hidden" name="kriteria[<?php echo $kriteriaItem['id'] ?>][status_sub]" value="<?php echo $kriteriaItem['status_sub'] ?>">
-                                    <?php } ?>
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">

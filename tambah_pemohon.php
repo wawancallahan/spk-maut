@@ -5,11 +5,6 @@ require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/middleware/hasAuth.php';
 
-use Models\Kriteria;
-
-$kriteriaModel = new Kriteria($pdo);
-$kriteriaItems = $kriteriaModel->getKriteriaAndSubKriteria();
-
 ob_start();
 
 extract([
@@ -74,32 +69,14 @@ extract([
                             <!-- form start -->
                             <form action="tambah_pemohon_proses.php" method="POST" enctype="multipart/form-data">
                                 <div class="card-body">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Nama</label>
                                         <input type="text" name="nama" class="form-control" placeholder="Nama" required>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label>Alamat</label>
                                         <textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" required></textarea>
                                     </div>
-                                    <hr>
-
-                                    <?php foreach ($kriteriaItems as $kriteriaItem) { ?>
-                                        <div class="form-group">
-                                            <label for=""><?php echo $kriteriaItem['nama'] ?></label>
-                                            <?php if ($kriteriaItem['status_sub'] == 1) { ?>
-                                                <select name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" id="" class="form-control" required>
-                                                    <option value=""><?php echo $kriteriaItem['nama'] ?></option>
-                                                    <?php foreach ($kriteriaItem['sub_kriteria'] as $sub_kriteria) { ?>
-                                                        <option value="<?php echo $sub_kriteria['id'] ?>"><?php echo $sub_kriteria['nama'] ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            <?php } else { ?>
-                                                <input type="number" name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" class="form-control" placeholder="<?php echo $kriteriaItem['nama'] ?>" required>
-                                            <?php } ?>
-                                        </div>
-                                        <input type="hidden" name="kriteria[<?php echo $kriteriaItem['id'] ?>][status_sub]" value="<?php echo $kriteriaItem['status_sub'] ?>">
-                                    <?php } ?>
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">

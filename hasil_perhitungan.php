@@ -13,8 +13,10 @@ use Models\Pemohon;
 $hasilModel = new Hasil($pdo);
 $pemohonModel = new Pemohon($pdo);
 
-$hasilItems = $hasilModel->index();
-$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+$bulanSelected = isset($_GET['bulan']) ? $_GET['bulan'] : 1;
+
+$hasilItems = $hasilModel->index($bulanSelected);
+$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'), $bulanSelected);
 
 $hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
     $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
@@ -85,16 +87,32 @@ extract([
 					<div class="container-fluid p-0">
                         <?php require_once __DIR__ . '/components/flash.php' ?>
 
-                        <div class="mb-3">
-                            <button type="button" class="btn btn-primary" id="perhitungan">Mulai Perhitungan</button>
-                            <a href="hapus_perhitungan.php" class="btn btn-danger me-1">Hapus Perhitungan</button>
-                            <a href="hasil_download.php" class="btn btn-primary" target="_blank">Download PDF</a>
-                        </div>
-
                         <div class="card card-primary">
                             <div class="card-header">
                                 <h3 class="card-title">Daftar Pemohon</h3>
                             </div>
+
+                            <form action="" method="GET" enctype="multipart/form-data">
+
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Bulan</label>
+                                        <select name="bulan" id="bulan" class="form-control" required>
+                                            <option value="">Pilih Bulan</option>
+                                            <?php foreach (get_bulan() as $bulanId => $bulan) { ?>
+                                                <option value="<?php echo $bulanId ?>" <?php echo $bulanSelected == $bulanId ? 'selected' : null ?>><?php echo $bulan ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <button type="button" class="btn btn-primary" id="perhitungan">Mulai Perhitungan</button>
+                                        <a href="hapus_perhitungan.php?bulan=<?php echo $bulanSelected ?>" class="btn btn-danger me-1">Hapus Perhitungan</button>
+                                        <a href="hasil_download.php?bulan=<?php echo $bulanSelected ?>" class="btn btn-primary" target="_blank">Download PDF</a>
+                                    </div>
+                                </div>
+
+                            </form>
 
                             <!-- /.card-header -->
                             <div class="card-body table-responsive p-0">
@@ -179,8 +197,15 @@ extract([
                     url: 'perhitungan.php',
                     type: 'POST',
                     dataType: 'json',
+                    data: {
+                        bulan: $('#bulan').val()
+                    }
                 }).then(function (response) {
-                    $('#hasil_perhitungan').html(response.result_data_view);
+                    if (response.status) {
+                        $('#hasil_perhitungan').html(response.result_data_view);
+                    } else {
+                        alert(response.message);
+                    }
                     el.removeAttr('disabled');
                 }).catch(function () {
                     alert('Gagal');

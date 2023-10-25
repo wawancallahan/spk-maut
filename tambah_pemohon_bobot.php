@@ -3,17 +3,34 @@
 require __DIR__ . '/config/connect.php';
 require __DIR__ . '/config/session.php';
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config/form.php';
 require __DIR__ . '/middleware/hasAuth.php';
 
 use Models\Pemohon;
 
 $pemohonModel = new Pemohon($pdo);
-$pemohonItems = $pemohonModel->index();
+
+$id = input_form($_GET['id'] ?? null);
+$item = $pemohonModel->find($id);
+
+if ($item === null) {
+    $_SESSION['type'] = 'danger';
+    $_SESSION['message'] = 'Data Tidak Ditemukan';
+
+    header('location: pemohon.php');
+    die();
+}
+
+use Models\Kriteria;
+
+$kriteriaModel = new Kriteria($pdo);
+$kriteriaItems = $kriteriaModel->getKriteriaAndSubKriteria();
+
+$alternatifBobotItems = $pemohonModel->getAlternatifBobotByAlternatifId($id);
 
 ob_start();
 
 extract([
-    'pemohonItems' => $pemohonItems
 ]);
 
 ?>
@@ -66,42 +83,95 @@ extract([
 					<div class="container-fluid p-0">
                         <?php require_once __DIR__ . '/components/flash.php' ?>
 
-                        <div class="mb-3">
-                            <a href="tambah_pemohon.php" class="btn btn-primary">Tambah Pemohon</a>
-                        </div>
-
+                        <!-- general form elements -->
                         <div class="card card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">Daftar Pemohon</h3>
+                                <h3 class="card-title">Tambah Bobot Pemohon</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+							<div class="card-body">
+								<div class="mb-3">
+									<label>Nama</label>
+									<input type="text" name="nama" class="form-control" placeholder="Nama" value="<?php echo $item['nama'] ?>" disabled>
+								</div>
+								<div class="mb-3">
+									<label>Alamat</label>
+									<textarea name="alamat" id="" cols="4" class="form-control" placeholder="Alamat" disabled><?php echo $item['alamat'] ?></textarea>
+								</div>
+							</div>
+
+							<div class="card-header">
+                                <h3 class="card-title">Tambah Bobot</h3>
                             </div>
 
-                            <!-- /.card-header -->
+
+                            <form action="tambah_pemohon_bobot_proses.php" method="POST" enctype="multipart/form-data">
+								<input type="hidden" name="pemohon_id" value="<?php echo $id ?>">
+
+								<div class="card-body">
+									<div class="mb-3">
+                                        <label class="form-label">Bulan</label>
+                                        <select name="bulan" id="" class="form-control" required>
+                                            <option value="">Pilih Bulan</option>
+											<?php foreach (get_bulan() as $bulanId => $bulan) { ?>
+												<option value="<?php echo $bulanId ?>"><?php echo $bulan ?></option>
+											<?php } ?>
+                                        </select>
+                                    </div>
+
+									<?php foreach ($kriteriaItems as $kriteriaItem) { ?>
+										<div class="mb-3">
+											<label for="">Kriteria: <?php echo $kriteriaItem['nama'] ?></label>
+											<?php if ($kriteriaItem['status_sub'] == 1) { ?>
+												<select name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" id="" class="form-control" required>
+													<option value=""><?php echo $kriteriaItem['nama'] ?></option>
+													<?php foreach ($kriteriaItem['sub_kriteria'] as $sub_kriteria) { ?>
+														<option value="<?php echo $sub_kriteria['id'] ?>"><?php echo $sub_kriteria['nama'] ?></option>
+													<?php } ?>
+												</select>
+											<?php } else { ?>
+												<input type="number" name="kriteria[<?php echo $kriteriaItem['id'] ?>][bobot]" class="form-control" placeholder="<?php echo $kriteriaItem['nama'] ?>" required>
+											<?php } ?>
+										</div>
+										<input type="hidden" name="kriteria[<?php echo $kriteriaItem['id'] ?>][status_sub]" value="<?php echo $kriteriaItem['status_sub'] ?>">
+									<?php } ?>
+								</div>
+
+								<!-- /.card-body -->
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</div>
+							 
+                            </form>
+
+							<div class="card-header">
+                                <h3 class="card-title">Data Bobot</h3>
+                            </div>
+
+							<!-- /.card-header -->
                             <div class="card-body table-responsive p-0">
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Nama</th>
-                                            <th>Alamat</th>
+                                            <th>Bulan</th>
+                                            <th>Kriteria</th>
+											<th>Sub Kriteria</th>
+											<th>Bobot</th>
                                             <th>Option</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($pemohonItems as $index => $pemohonItem) { ?>
+                                        <?php foreach ($alternatifBobotItems as $index => $alternatifBobotItem) { ?>
                                             <tr>
                                                 <td><?php echo $index + 1 ?></td>
-                                                <td><?php echo $pemohonItem['nama'] ?></td>
-                                                <td><?php echo $pemohonItem['alamat'] ?></td>
+                                                <td><?php echo get_bulan()[$alternatifBobotItem['bulan']] ?? '-' ?></td>
+                                                <td><?php echo $alternatifBobotItem['kriteria_nama'] ?></td>
+                                                <td><?php echo $alternatifBobotItem['sub_kriteria_nama'] ?></td>
+                                                <td><?php echo $alternatifBobotItem['bobot'] ?></td>
                                                 <td>
-													<a href="tambah_pemohon_bobot.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-info btn-sm">
-                                                        <i class="fa fa-edit"></i> Bobot
-                                                    </a>
-                                                    
-													<a href="edit_pemohon.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-warning btn-sm">
-                                                        <i class="fa fa-edit"></i> Edit
-                                                    </a>
-                                                    
-                                                    <a href="hapus_pemohon_proses.php?id=<?php echo $pemohonItem['id'] ?>" class="btn btn-danger btn-sm">
+                                                    <a href="hapus_pemohon_bobot_proses.php?id=<?php echo $alternatifBobotItem['id'] ?>" class="btn btn-danger btn-sm">
                                                         <i class="fa fa-trash"></i> Hapus
                                                     </a>
                                                 </td>

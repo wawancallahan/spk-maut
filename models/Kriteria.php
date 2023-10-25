@@ -104,7 +104,7 @@ class Kriteria {
                 return 'validation';
                
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 'fail';
         }    
     }
@@ -131,7 +131,7 @@ class Kriteria {
                 return null;
                
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         } 
     }

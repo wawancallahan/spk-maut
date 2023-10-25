@@ -7,31 +7,29 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Models\Pemohon;
 
-$id = null;
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = input_form($_POST['id'] ?? null);
-    $nama = input_form($_POST['nama'] ?? null);
-    $alamat = input_form($_POST['alamat'] ?? null);
-    
+    $pemohon_id = input_form($_POST['pemohon_id'] ?? null);
+    $bulan = input_form($_POST['bulan'] ?? null);
+    $kriteria = $_POST['kriteria'] ?? null;
+
     $pemohonModel = new Pemohon($pdo);
-    $item = $pemohonModel->update([
-        'nama' => $nama,
-        'alamat' => $alamat,
-        'id' => $id
+    $item = $pemohonModel->createAlternatifBobot([
+        'pemohon_id' => $pemohon_id,
+        'bulan' => $bulan,
+        'kriteria' => $kriteria,
     ]);
 
     switch ($item) {
         case 'success':
             $_SESSION['type'] = 'success';
-            $_SESSION['message'] = 'Data Berhasil Diedit';
+            $_SESSION['message'] = 'Data Berhasil Ditambah';
 
-            header('location: pemohon.php');
+            header('location: tambah_pemohon_bobot.php?id=' . $pemohon_id);
             die();
             break;
         case 'fail':
             $_SESSION['type'] = 'danger';
-            $_SESSION['message'] = 'Data Gagal Diedit';
+            $_SESSION['message'] = 'Data Gagal Ditambah';
             break;
         case 'validation':
             $_SESSION['type'] = 'danger';
@@ -39,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
     }
 
-    header('location: edit_pemohon.php?id=' . $id);
+    header('location: tambah_pemohon_bobot.php?id=' . $pemohon_id);
     die();
 }
 
 $_SESSION['type'] = 'danger';
 $_SESSION['message'] = 'Terjadi Kesalahan Proses Data';
 
-header('location: edit_pemohon.php?id=' . $id);
+header('location: pemohon.php');
 die();

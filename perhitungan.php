@@ -16,8 +16,31 @@ $hasilModel = new Hasil($pdo);
 $kriteriaModel = new Kriteria($pdo);
 $pemohonModel = new Pemohon($pdo);
 
+$bulan = isset($_POST['bulan']) ? $_POST['bulan'] : null;
+
+if ($bulan === null) {
+    echo json_encode([
+        'status' => false,
+        'message' => 'Data Tidak Ditemukan',
+        'result_data_view' => ''
+    ]);
+
+    exit;
+}
+
+
 $kriteriaItems = $kriteriaModel->index();
-$pemohonItems = $pemohonModel->getAlternatifAndBobot();
+$pemohonItems = $pemohonModel->getAlternatifAndBobot($bulan);
+
+if (count($pemohonItems) <= 0) {
+    echo json_encode([
+        'status' => false,
+        'message' => 'Data Tidak Ditemukan',
+        'result_data_view' => ''
+    ]);
+
+    exit;
+}
 
 try {
     // Perhitungan Maut
@@ -75,7 +98,7 @@ try {
             $atas = $bobot['nilai'] - $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_min'];
             $bawah = $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_max'] - $kriteriaItems[$bobot['kriteria_id']]['nilai_matrik_min'];
             
-            $nilai_normalisasi = number_format($atas / $bawah, 3);
+            $nilai_normalisasi = $bawah > 0 ? number_format($atas / $bawah, 3) : 0;
 
             $bobot['nilai_normalisasi'] = $nilai_normalisasi;   
 
@@ -113,6 +136,7 @@ try {
     $no = 1;
     foreach ($pemohonHasilItems as $pemohonId => $pemohonHasilItem) {
         $hasilModel->create([
+            'bulan' => $bulan,
             'alternatif_id' => input_form($pemohonId),
             'no' => input_form($no),
             'nilai' => input_form($pemohonHasilItem)
@@ -121,8 +145,8 @@ try {
         $no++;
     }
 
-    $hasilItems = $hasilModel->index();
-    $bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+    $hasilItems = $hasilModel->index($bulan);
+    $bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'), $bulan);
 
     $hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
         $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
@@ -158,6 +182,7 @@ try {
 } catch (\Exception $e) {
     echo json_encode([
         'status' => false,
+        'message' => $e->getMessage(),
         'result_data_view' => ''
     ]);
 }

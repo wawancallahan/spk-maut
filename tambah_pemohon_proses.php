@@ -10,14 +10,11 @@ use Models\Pemohon;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama = input_form($_POST['nama'] ?? null);
     $alamat = input_form($_POST['alamat'] ?? null);
-    $kriteria = $_POST['kriteria'] ?? null;
 
     $pemohonModel = new Pemohon($pdo);
     $item = $pemohonModel->create([
         'nama' => $nama,
-        'alamat' => $alamat,
-        'kriteria' => $kriteria,
-        'file' => null
+        'alamat' => $alamat
     ]);
 
     switch ($item) {
