@@ -15,8 +15,16 @@ $hasilModel = new Hasil($pdo);
 $pemohonModel = new Pemohon($pdo);
 $kriteriaModel = new Kriteria($pdo);
 
-$hasilItems = $hasilModel->index();
-$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'));
+$bulan = isset($_GET['bulan']) ? $_GET['bulan'] : null;
+
+if ($bulan === null) {
+    echo "Data tidak ditemukan";
+
+    exit;
+}
+
+$hasilItems = $hasilModel->index($bulan);
+$bobotAlternatifItems = $pemohonModel->getBobotIn(array_column($hasilItems, 'alternatif_id'), $bulan);
 
 $hasilItems = array_map(function ($item) use ($bobotAlternatifItems) {
     $item['bobot'] = array_filter($bobotAlternatifItems, function ($bobot) use ($item) {
