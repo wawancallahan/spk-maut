@@ -23,7 +23,7 @@
     </style>
 </head>
 <body>
-    <h1>Hasil Pemohon</h1>
+    <h1>Hasil Alternatif</h1>
     
     <table class="table">
         <thead>

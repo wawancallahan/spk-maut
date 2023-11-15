@@ -58,14 +58,16 @@ class Hasil {
         }    
     }
 
-    public function delete()
+    public function delete($bulan)
     {
         try {
-            $query = "DELETE FROM hasil";
+            $query = "DELETE FROM hasil WHERE bulan = ?";
             
             $statement = $this->pdo->prepare($query);
             
-            $execute = $statement->execute();
+            $execute = $statement->execute([
+                $bulan
+            ]);
 
             return $execute;
         } catch (\Exception $e) {
