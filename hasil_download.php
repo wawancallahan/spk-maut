@@ -18,8 +18,9 @@ $kriteriaModel = new Kriteria($pdo);
 $bulan = isset($_GET['bulan']) ? $_GET['bulan'] : null;
 
 if ($bulan === null) {
-    echo 'Bulan tidak ditemukan';
-    exit();
+    echo "Data tidak ditemukan";
+
+    exit;
 }
 
 $hasilItems = $hasilModel->index($bulan);
