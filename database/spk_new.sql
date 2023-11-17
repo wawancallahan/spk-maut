@@ -7,6 +7,27 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS `kriteria`;
+CREATE TABLE `kriteria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(255) NOT NULL,
+  `bobot` float(8,2) NOT NULL,
+  `status_sub` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP TABLE IF EXISTS `sub_kriteria`;
+CREATE TABLE `sub_kriteria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kriteria_id` int(11) NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `bobot` float(8,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `kriteria_id` (`kriteria_id`),
+  CONSTRAINT `sub_kriteria_ibfk_1` FOREIGN KEY (`kriteria_id`) REFERENCES `kriteria` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `alternatif`;
 CREATE TABLE `alternatif` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -46,27 +67,6 @@ CREATE TABLE `hasil` (
   CONSTRAINT `hasil_ibfk_1` FOREIGN KEY (`alternatif_id`) REFERENCES `alternatif` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
-DROP TABLE IF EXISTS `kriteria`;
-CREATE TABLE `kriteria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nama` varchar(255) NOT NULL,
-  `bobot` float(8,2) NOT NULL,
-  `status_sub` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
-DROP TABLE IF EXISTS `sub_kriteria`;
-CREATE TABLE `sub_kriteria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `kriteria_id` int(11) NOT NULL,
-  `nama` varchar(255) NOT NULL,
-  `bobot` float(8,2) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `kriteria_id` (`kriteria_id`),
-  CONSTRAINT `sub_kriteria_ibfk_1` FOREIGN KEY (`kriteria_id`) REFERENCES `kriteria` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `user`;
